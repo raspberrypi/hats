@@ -83,7 +83,7 @@ For top boards that don’t stack, set all address bits to zero. (NB reduced pin
 
 Implementing an EEPROM is optional for non-stackable boards but mandatory for stackable boards. **Implementing an EEPROM is also a prerequisite for support in the default kernel.**
 
-Details of the EEPROM format can be found in the [EEPROM format specification](eeprom-format.md). [Software tools] are available for creation of valid EEPROM images, to flash an image or read and dump and image to/from an attached HAT EEPROM.
+Details of the EEPROM format can be found in the [EEPROM format specification](eeprom-format.md). [Software tools](./eepromutils) are available for creation of valid EEPROM images, to flash an image or read and dump and image to/from an attached HAT EEPROM.
 
 The following is an example of connecting an EEPROM on a stackable HAT and includes jumpers for address setting as well as a jumper and probe point to disable write protect. [PIC]
 
