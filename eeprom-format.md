@@ -2,7 +2,7 @@
 
 **CURRENTLY THIS SPEC IS PRELIMINARY AND THEREFORE STILL LIKELEY TO CHANGE**
 
-Note that there are [software tools] for creation of EEPROM images and for flashing / dumping images from attached HATs.
+Note that there are [software tools](./eepromutils) for creation of EEPROM images and for flashing / dumping images from attached HATs.
 
 ## EEPROM Structure
 
