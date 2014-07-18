@@ -72,7 +72,7 @@ Note that there are [software tools] for creation of EEPROM images and for flash
             [7:2] reserved    set to 0
   1       bank_drive  bank drive strength/slew/hysteresis, BCM2835 can only set per bank, not per IO
             Bits in byte:
-            [  0] nondefault  1=enable non-default pad drive/slew/hysteresis (**highly recommended to leave this bit at zero!**)
+            [  0] nondefault  1=non-default pad drive/slew/hyst (**recommended to leave this bit at zero!**)
             [  1] reserved    set to 0
             [  2] noslew      0=slew rate limited 1=slew rate not limited
             [  3] hysten      0=hysteresis disabled, 1=hysteresis enabled
