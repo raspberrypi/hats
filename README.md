@@ -89,11 +89,7 @@ The following is an example of connecting an EEPROM on a stackable HAT and inclu
 
 ## Mechanical Specification
 
-TODO
-
-## Connectors etc.
-
-TODO
+The [following drawing](hat-board-mechanical.pdf) gives mechanical detials of HATs intended to fit over the 4 mounting holes (56x65mm size boards).
 
 ## Back Powering the Pi via the J8 GPIO Header
 
