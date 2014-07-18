@@ -85,7 +85,7 @@ Implementing an EEPROM is optional for non-stackable boards but mandatory for st
 
 Details of the EEPROM format can be found in the [EEPROM format specification](eeprom-format.md). [Software tools](./eepromutils) are available for creation of valid EEPROM images, to flash an image or read and dump and image to/from an attached HAT EEPROM.
 
-The following is an example of connecting an EEPROM on a stackable HAT and includes jumpers for address setting as well as a jumper and probe point to disable write protect. [PIC]
+[The following schematic fragment](eeprom-circuit.png) is an example of connecting an EEPROM on a stackable HAT and includes jumpers for address setting as well as a jumper and probe point to disable write protect. [PIC]
 
 ## Mechanical Specification
 
@@ -99,9 +99,6 @@ On the Pi, the 5V GPIO header pins connect to the 5V net after the micro-USB inp
 
 If the Pi is going to be back-powered via the 5V GPIO header pins it is **required** to implement a duplicate power ORing diode to feed the HAT 5V net (and therefore Pi 5V, via the GPIO header pins).
 
-Implementing the back-powering this way makes it completely safe to provide power to the Pi from the HAT board but also have the Pi 5V power supply attached.
-
-For clarity, the following diagram shows the required HAT back-powering arrangement using the ideal diodes:
-[PIC]
+Implementing the back-powering this way makes it safe to provide power to the Pi from the HAT board but also have the Pi 5V power supply attached.
 
 **Under no circumstances should a power source be connected to the J8 3.3V pins.**
