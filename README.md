@@ -1,4 +1,4 @@
-# DESIGN GUIDE FOR RASPBERRY PI HATS (ADD-ON BOARDS FOR B+)
+# GUIDE TO DESIGNING ADD-ON BOARDS FOR B+
 
 **NOTE THIS INFORMATION IS CURRENTLY STILL CHANGING**
 
@@ -12,7 +12,7 @@ While we cannot force anyone to follow this guide, any boards which break the ru
 
 So why are we bothering with all this? Basically we want to ensure consistency and compatibility with future add-on boards, and to allow a much better end-user experience, especially for the less technically aware users.
 
-Finally if you have any questions please head over to the forums[] to ask them.
+Finally if you have any questions please head over to the [forums](http://www.raspberrypi.org/forums/viewforum.php?f=100) to ask them.
 
 ## Types of HATs
 
