@@ -8,7 +8,7 @@ The Raspberry Pi B+ has been designed specifically with add-on boards - we're ca
 
 **If you are thinking about or are designing an add-on board for the Raspberry Pi B+ please read and follow this design guide carefully and make sure the requirements are met. There aren't too many hard requirements, and they shouldn't be too dificult to design for or follow.**
 
-While we cannot force anyone to follow this guide, any boards which break the rules (and therefore may cause incompatibility or issues for end users) will be thoroughly denounced by the Foundation (and generally moaned about in the forums). You have been warned.
+While we cannot force anyone to follow this guide, any boards which break the rules (and therefore may cause incompatibility or issues for end users) will not be looked on very favourably. You have been warned.
 
 So why are we bothering with all this? Basically we want to ensure consistency and compatibility with future add-on boards, and to allow a much better end-user experience, especially for the less technically aware users.
 
