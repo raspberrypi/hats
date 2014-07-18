@@ -72,18 +72,18 @@ Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0 a
 
 Pull-ups must be provided on the top board for SCL and SDA  (ID_SC and ID_SD respectively) to 3V3 – recommended pull-up value is 2.2K.
 
-A 24Cxx type I2C EEPROM **must** be used. The device **must** be powered from 3V3 (avoid the 5V only variants). A recommended part is OnSemi CAT24Cxx, for example CATC24C32 for a 32kbit device. The EEPROM size required is variable and depends on the size of some of the vendor data strings in the EEPROM and whether a device tree data blob is included (and its size) and whether any other vendor specific data is included.
+A 24Cxx type I2C EEPROM must be used. The device must be powered from 3V3 (avoid the 5V only variants). A recommended part is OnSemi CAT24Cxx, for example CATC24C32 for a 32kbit device. The minimum EEPROM size required is variable and depends on the size of the vendor data strings in the EEPROM and whether a device tree data blob is included (and its size) and whether any other vendor specific data is included.
 
 It is recommended that EEPROM WP (write protect) pin be connected to a test point on the board and pulled up to 3V3 with a 1K resistor. The idea is that at board test/probe the EEPROM can be written (WP pin can be driven LOW), but there is no danger of a user accidentally changing the device contents once the board leaves the factory. Note that the recommended device has an internal pull down hence the stiff (1K) pull up is required. Note that on some devices WP does not write protect the entire array (e.g. some Microchip variants) – avoid using these.
-It may be desirable for a HAT to have the ability for its EEPROM to be reflashed by an end user, in this case it is recommended to also include a user settable jumper (or dip switch) to short WP to GND and make the EEPROM writable once more. At least this way a user has to perform a specific action to make the EEPROM writeable again before being able to re-flash the EEPROM, and a suitable warning process can be put in place to make sure they flash the correct image.
+It may be desirable for a HAT to have the ability for its EEPROM to be reflashed by an end user, in this case it is recommended to also include a user settable jumper (or dip switch) to short WP to GND and make the EEPROM writable once more. At least this way a user has to perform a specific action to make the EEPROM writeable again before being able to re-flash it and a suitable warning process can be put in place to make sure the correct image is used.
 
 For top boards that stack, jumpers or DIP switches should be provided to adjust A0 and A1 with A2 being fixed to zero.
 
-For top boards that don’t stack, set all address bits to zero. (NB reduced pin count variants of the recommended device – e.g. SOT23-5 package – usually have A[2:0] set to 0 anyway but please check).
+For top boards that don’t stack, set all address bits to zero. (NB reduced pin count variants of the recommended device – e.g. SOT23-5 package - usually have A[2:0] set to 0 anyway but please check).
 
-Implementing an EEPROM is optional for non-stackable boards but mandatory for stackable boards. Implementing an EEPROM is also a prerequisite for support in the default kernel. 
+Implementing an EEPROM is optional for non-stackable boards but mandatory for stackable boards. **Implementing an EEPROM is also a prerequisite for support in the default kernel.**
 
-Details of the EEPROM format can be found in the [EEPROM Specification](eeprom-data.md). [Software tools] are available for creation of valid EEPROM images, to flash an image or read and dump and image to/from an attached HAT EEPROM.
+Details of the EEPROM format can be found in the [EEPROM format specification](eeprom-format.md). [Software tools] are available for creation of valid EEPROM images, to flash an image or read and dump and image to/from an attached HAT EEPROM.
 
 The following is an example of connecting an EEPROM on a stackable HAT and includes jumpers for address setting as well as a jumper and probe point to disable write protect. [PIC]
 
