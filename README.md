@@ -68,7 +68,7 @@ It is strongly recommended to include an ID EEPROM on non-stackable boards but t
 
 The ID EEPROM is interrogated at boot time and provides the Pi with the required GPIO setup (pin settings and functions) for the HAT as well as (optionally) a Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards.
 
-Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0 and GPIO1) are reserved for use solely for board identification. An I2C EEPROM plus pull-up resistors should be the only connections to these pins.
+Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0 and GPIO1) are reserved for use solely for board identification. **An I2C EEPROM plus pull-up resistors should be the only connections to these pins.**
 
 Pull-ups must be provided on the top board for SCL and SDA  (ID_SC and ID_SD respectively) to 3V3 – recommended pull-up value is 2.2K.
 
