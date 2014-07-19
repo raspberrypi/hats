@@ -23,6 +23,7 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
   1       version     EEPROM data format version (0x00 reserved, 0x01 = first version)
   1       reserved    set to 0
   2       numatoms    total atoms in EEPROM
+  4       eeplen      total length in bytes of all eeprom data (including this header)
 ```
 
 ## Atom Structure
