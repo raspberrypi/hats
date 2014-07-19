@@ -72,18 +72,15 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
             [  0] can_stack   1=board designed to be stackable, 0=board not intended to stack
             [7:2] reserved    set to 0
   1       bank_drive  bank drive strength/slew/hysteresis, BCM2835 can only set per bank, not per IO
-            Bits in byte:
-            [  0] nondefault  1=non-default bank drive/slew/hyst (**recommended to leave this bit at zero!**)
-            [  1] reserved    set to 0
-            [  2] noslew      0=slew rate limited 1=slew rate not limited
-            [  3] hysten      0=hysteresis disabled, 1=hysteresis enabled
-            [6:4] drive       pad drive strength in mA 0-7=2,4,6,8,10,12,14,16mA
-            [  7] reserved    set to 0
+            Bits in byte:     **NOTE must leave at default settings for stacking boards**
+            [3:0] drive       0=leave at default, 1-8=drive*2mA, 9-15=reserved
+            [5:4] slew        0=leave at default, 1=slew rate limiting, 2=no slew limiting, 3=reserved
+            [7:6] hysteresis  0=leave at default, 1=hysteresis disabled, 2=hysteresis enabled, 3=reserved
   28      1 byte per IO pin
             Bits in each byte:
             [2:0] func_sel    GPIO function as per FSEL GPIO register field in BCM2835 datasheet
             [4:3] reserved    set to 0
-            [6:5] pulltype    00=leave at default setting,  01=pullup, 10=pulldown, 11=none
+            [6:5] pulltype    0=leave at default setting,  1=pullup, 2=pulldown, 3=no pull
             [  7] is_used     1=board uses this pin, 0=not connected and therefore not used
 ```
 
