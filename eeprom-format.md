@@ -73,7 +73,7 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
             [7:2] reserved    set to 0
   1       bank_drive  bank drive strength/slew/hysteresis, BCM2835 can only set per bank, not per IO
             Bits in byte:
-            [  0] nondefault  1=non-default pad drive/slew/hyst (**recommended to leave this bit at zero!**)
+            [  0] nondefault  1=non-default bank drive/slew/hyst (**recommended to leave this bit at zero!**)
             [  1] reserved    set to 0
             [  2] noslew      0=slew rate limited 1=slew rate not limited
             [  3] hysten      0=hysteresis disabled, 1=hysteresis enabled
@@ -81,10 +81,10 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
             [  7] reserved    set to 0
   28      1 byte per IO pin
             Bits in each byte:
-            [  0] is_used     1=board uses this pin, 0=not connected and therefore not used
-            [3:1] func_sel    GPIO alt FN as per BCM2835 datasheet
-            [5:4] iotype      00=input, 01=output, 10=bidir,    11=open drain
-            [7:6] pulltype    00=none,  01=pullup, 10=pulldown, 11=leave at default setting
+            [2:0] func_sel    GPIO function as per FSEL GPIO register field in BCM2835 datasheet
+            [4:3] reserved    set to 0
+            [6:5] pulltype    00=leave at default setting,  01=pullup, 10=pulldown, 11=none
+            [  7] is_used     1=board uses this pin, 0=not connected and therefore not used
 ```
 
 ### Device tree atom data (type=0x0003):
