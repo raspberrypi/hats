@@ -2,7 +2,7 @@
 # EEPROM settings text file
 #
 # Edit this file for your particular board and run through eepmake tool,
-# then use hatwrite tool to write to attached HAT ID EEPROM 
+# then use eepflash tool to write to attached HAT ID EEPROM 
 #
 # Tools available:
 #  eepmake   Pareses EEPROM text file and createds binary .eep file
