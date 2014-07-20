@@ -95,10 +95,10 @@ The [following drawing](hat-board-mechanical.pdf) gives mechanical detials of HA
 
 It is possible to power the Pi by supplying 5V thourhg the GPIO header (J8) pins 2,4 and GND. The acceptable input voltage range is 5V ±5%.
 
-On the Pi, the 5V GPIO header pins connect to the 5V net after the micro-USB input, polyfuse and input 'ideal' power ORing diode (made up of the PFET and matched PNP transistors). 
+On the Pi, the 5V GPIO header pins connect to the 5V net after the micro-USB input, polyfuse and input 'ideal' safety diode (made up of the PFET and matched PNP transistors). The 'safety' diode stops any apreciable current flowing back out of the 5V micro USB should the 5V net on the board be at a higher voltage.
 
-If the Pi is going to be back-powered via the 5V GPIO header pins it is **required** to implement a duplicate power ORing diode to feed the HAT 5V net (and therefore Pi 5V, via the GPIO header pins).
+If the Pi is going to be back-powered via the 5V GPIO header pins it is **strongly recommended** to implement a duplicate power safety diode before the HAT 5V net (which then feeds power back through the 5V GPIO pins).
 
-Implementing the back-powering this way makes it safe to provide power to the Pi from the HAT board but also have the Pi 5V power supply attached.
+Implementing the back-powering this way makes it safe to provide power to the Pi from the HAT board but also have the Pi 5V power supply attached. (Though it is still not recommended to attach both).
 
 **Under no circumstances should a power source be connected to the J8 3.3V pins.**
