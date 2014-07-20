@@ -7,8 +7,7 @@
 # Tools available:
 #  eepmake   Pareses EEPROM text file and createds binary .eep file
 #  eepdump   Dumps a binary .eep file as human readable text (for debug)
-#  hatwrite  Flash EEPROM binary image to attached HAT EEPROM
-#  hatread   Reads EEPROM from attached HAT into .eep file
+#  eepflash  Write or read .eep binary image to/from HAT EEPROM
 #
 ########################################################################
 
