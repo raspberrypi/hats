@@ -4,9 +4,9 @@
 
 ## Introduction
 
-The Raspberry Pi B+ has been designed specifically with add-on boards - we're calling them Raspberry Pi HATs (Hardware Attached on Top) - in mind. This guide contains both recommendataions and also **requirements** that must be followed when designing an add-on board for the B+.
+The Raspberry Pi B+ has been designed specifically with add-on boards - we're calling them Raspberry Pi HATs (Hardware Attached on Top) - in mind. This guide contains both recommendations and also **requirements** that must be followed when designing an add-on board for the B+.
 
-**If you are thinking about or are designing an add-on board for the Raspberry Pi B+ please read and follow this design guide carefully and make sure the requirements are met. There aren't too many hard requirements, and they shouldn't be too dificult to design for or follow.**
+**If you are thinking about or are designing an add-on board for the Raspberry Pi B+ please read and follow this design guide carefully and make sure the requirements are met. There aren't too many hard requirements, and they shouldn't be too difficult to design for or follow.**
 
 While we cannot force anyone to follow this guide, any boards which break the rules (and therefore may cause incompatibility or issues for end users) will not be looked on very favourably. You have been warned.
 
@@ -56,13 +56,13 @@ An output must either:
 
 At power-on these must be inputs. Note that a weak pull on a bidirectional pin is allowed **but only if it is pulling in the same direction as the default power-on GPIO pull.**
 
-An add-on board **must not** provide a pull on a bidirectional pin that is opposite to the default GPIO pull, as this can cause an undefined state on the pin, and potentially other stacked boards (most likeley incompatible ones) may rely on the pull state of a pin to hold their output pins in a disabled (i.e. not driving) state.
+An add-on board **must not** provide a pull on a bidirectional pin that is opposite to the default GPIO pull, as this can cause an undefined state on the pin, and potentially other stacked boards (most likely incompatible ones) may rely on the pull state of a pin to hold their output pins in a disabled (i.e. not driving) state.
 
 **Input Pins**
 
 The user must be aware that pins will, at power on, be set to the default power on state (pulled high or low) depending on the default pull up/down for that particular GPIO.
 
-An add-on board **must not** provide a pull on an input that is opposite to the default GPIO pull, as this can cause an undefined state on the pin, and potentially other stacked boards (most likeley incompatible ones) may rely on the pull state of a pin to hold their output pins in a disabled (i.e. not driving) state.
+An add-on board **must not** provide a pull on an input that is opposite to the default GPIO pull, as this can cause an undefined state on the pin, and potentially other stacked boards (most likely incompatible ones) may rely on the pull state of a pin to hold their output pins in a disabled (i.e. not driving) state.
 
 #### ID EEPROM Rules for Stackable Boards
 
@@ -76,11 +76,11 @@ It is strongly recommended to include an ID EEPROM on non-stackable boards but t
 
 ## ID EEPROM
 
-The ID EEPROM is interrogated at boot time and provides the Pi with the required GPIO setup (pin settings and functions) for the HAT as well as (optionally) a Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards.
+The ID EEPROM is interrogated at boot time and provides the Pi with the required GPIO setup (pin settings and functions) for the HAT as well as (optionally) a binary Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards.
 
 Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0 and GPIO1) are reserved for use solely for board identification. **An I2C EEPROM plus pull-up resistors should be the only connections to these pins.**
 
-Pull-ups must be provided on the top board for SCL and SDA  (ID_SC and ID_SD respectively) to 3V3 – recommended pull-up value is 2.2K.
+Pull-ups must be provided on the top board for ID_SC and ID_SD  (SCL and SDA respectively) to 3V3 – recommended pull-up value is 2.2K.
 
 A 24Cxx type I2C EEPROM must be used. The device must be powered from 3V3 (avoid the 5V only variants). A recommended part is OnSemi CAT24Cxx, for example CATC24C32 for a 32kbit device. The minimum EEPROM size required is variable and depends on the size of the vendor data strings in the EEPROM and whether a device tree data blob is included (and its size) and whether any other vendor specific data is included.
 
@@ -105,7 +105,7 @@ The [following drawing](hat-board-mechanical.pdf) gives mechanical detials of HA
 
 It is possible to power the Pi by supplying 5V thourhg the GPIO header (J8) pins 2,4 and GND. The acceptable input voltage range is 5V ±5%.
 
-On the Pi, the 5V GPIO header pins connect to the 5V net after the micro-USB input, polyfuse and input 'ideal' safety diode (made up of the PFET and matched PNP transistors). The 'safety' diode stops any apreciable current flowing back out of the 5V micro USB should the 5V net on the board be at a higher voltage.
+On the Pi, the 5V GPIO header pins connect to the 5V net after the micro-USB input, polyfuse and input 'ideal' safety diode (made up of the PFET and matched PNP transistors). The 'safety' diode stops any appreciable current flowing back out of the 5V micro USB should the 5V net on the board be at a higher voltage than the 5V micro USB input.
 
 If the Pi is going to be back-powered via the 5V GPIO header pins it is **strongly recommended** to implement a duplicate power safety diode before the HAT 5V net (which then feeds power back through the 5V GPIO pins).
 
