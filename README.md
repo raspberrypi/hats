@@ -80,7 +80,7 @@ The ID EEPROM is interrogated at boot time and provides the Pi with the required
 
 Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0 and GPIO1) are reserved for use solely for board identification. **An I2C EEPROM plus pull-up resistors should be the only connections to these pins.**
 
-Pull-ups must be provided on the top board for ID_SC and ID_SD  (SCL and SDA respectively) to 3V3 – recommended pull-up value is 2.2K.
+Pull-ups must be provided on the top board for ID_SC and ID_SD  (SCL and SDA respectively) to 3V3. – pull-up value must be 6.8K (so up to 4 stacking boards can be supported without the then parallel pullups becoming too strong).
 
 A 24Cxx type I2C EEPROM must be used. The device must be powered from 3V3 (avoid the 5V only variants). A recommended part is OnSemi CAT24Cxx, for example CATC24C32 for a 32kbit device. The minimum EEPROM size required is variable and depends on the size of the vendor data strings in the EEPROM and whether a device tree data blob is included (and its size) and whether any other vendor specific data is included.
 
