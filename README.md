@@ -14,6 +14,18 @@ So why are we bothering with all this? Basically we want to ensure consistency a
 
 Finally if you have any questions please head over to the [forums](http://www.raspberrypi.org/forums/viewforum.php?f=100) to ask them.
 
+## GPIO State From Power-on
+
+Note that in the new B+ firmware after power-on the bank 0 GPIOs on GPIO header J8 (except ID_SD and ID_SC which are GPIO0 and 1 respectiveley) will be inputs with either a pull up or pull down. The default pull state can be found in the [BCM2835 peripherals specificaion](http://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf) section 6.2 table 6-31 (see the "Pull" column).
+
+Note that Raspberry Pi models A and B use some bank 0 GPIOs for board control functions and UART output:
+GPIO6 = LAN_RUN
+GPIO14 = UART_TX
+GPIO16 = STATUS_LED
+
+**If a user boots a B+ with legacy firmware these pins may get driven so it is recommended to avoid driving these from a HAT, or use a current limiting resistor if that is not possible. Note also relying on the pull state of these during boot is not advisable.** 
+It is also strongly recommended to ship a clear warning notice with your HAT that updated firmware must be used, and clear instructions for how to update the firmware on the Pi before plugging in the HAT.
+
 ## Types of HATs
 
 There are 2 basic types of HATs, stackable and non-stackable.
@@ -29,8 +41,6 @@ Stackable boards present a problem in that different boards may exist that use t
 The following rules **must** be followed when designing a stackable board.
 
 #### GPIO Pin Usage Rules for Stackable Boards
-
-Note that after power-on the bank 0 GPIOs on GPIO header J8 (except ID_SD and ID_SC which are GPIO0 and 1 respectiveley) will be inputs with either a pull up or pull down. The default pull state can be found in the BCM2835 peripherals specificaion[] section 6.2 table 6-31 (see the "Pull" column).
 
 **Output Pins**
 
