@@ -19,9 +19,9 @@ Finally if you have any questions please head over to the [forums](http://www.ra
 Note that in the new B+ firmware after power-on the bank 0 GPIOs on GPIO header J8 (except ID_SD and ID_SC which are GPIO0 and 1 respectiveley) will be inputs with either a pull up or pull down. The default pull state can be found in the [BCM2835 peripherals specificaion](http://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf) section 6.2 table 6-31 (see the "Pull" column).
 
 Note that Raspberry Pi models A and B use some bank 0 GPIOs for board control functions and UART output:
-GPIO6 = LAN_RUN
-GPIO14 = UART_TX
-GPIO16 = STATUS_LED
+GPIO6 -> LAN_RUN
+GPIO14 -> UART_TX
+GPIO16 -> STATUS_LED
 
 **If a user boots a B+ with legacy firmware these pins may get driven so it is recommended to avoid driving these from a HAT, or use a current limiting resistor if that is not possible. Note also relying on the pull state of these during boot is not advisable.** 
 It is also strongly recommended to ship a clear warning notice with your HAT that updated firmware must be used, and clear instructions for how to update the firmware on the Pi before plugging in the HAT.
@@ -76,7 +76,7 @@ It is strongly recommended to include an ID EEPROM on non-stackable boards but t
 
 ## ID EEPROM
 
-The ID EEPROM is interrogated at boot time and provides the Pi with the required GPIO setup (pin settings and functions) for the HAT as well as (optionally) a binary Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards.
+The ID EEPROM is interrogated at boot time and provides the Pi with the required GPIO setup (pin settings and functions) for the HAT as well as a binary Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards. Note that the device tree fragment is optional but strongly recommended. (NB docs for how to create this are on their way)
 
 Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0 and GPIO1) are reserved for use solely for board identification. **An I2C EEPROM plus pull-up resistors should be the only connections to these pins.**
 
