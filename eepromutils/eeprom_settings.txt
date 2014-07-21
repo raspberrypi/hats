@@ -34,10 +34,6 @@ product "Special Sensor Board"
 # GPIO bank settings, set to nonzero to change from the default.
 # NOTE these setting can only be set per BANK, uncommenting any of
 # these will force the bank to use the custom setting.
-# NOTE if stackable=1 then custom bank drive settings will be ignored
-
-# Is this a stackable board? (0=NO 1=YES)
-stackable 0
 
 # drive strength, 0=default, 1-8=2,4,6,8,10,12,14,16mA, 9-15=reserved
 gpio_drive 0
@@ -54,8 +50,6 @@ gpio_hyteresis 0
 # Options for FUNCTION: INPUT, OUTPUT, ALT0-ALT5
 # Options for PULL: DEFAULT, UP, DOWN, NONE
 # NB GPIO0,1 are reserved for ID EEPROM so cannot be set
-# It is recommended to leave pulls in the DEFAULT state unless
-# absoluteley necessary.
 
 #         GPIO  FUNCTION  PULL
 #         ----  --------  ----
