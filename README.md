@@ -4,9 +4,9 @@
 
 ## Introduction
 
-The Raspberry Pi B+ has been designed specifically with add-on boards - we're calling them Raspberry Pi HATs (Hardware Attached on Top) - in mind. This guide contains both recommendataions and also **requirements** that must be followed when designing an add-on board for the B+.
+The Raspberry Pi B+ has been designed specifically with add-on boards - we're calling them Raspberry Pi HATs (Hardware Attached on Top) - in mind. This guide contains both recommendations and also **requirements** that must be followed when designing an add-on board for the B+.
 
-**If you are thinking about or are designing an add-on board for the Raspberry Pi B+ please read and follow this design guide carefully and make sure the requirements are met. There aren't too many hard requirements, and they shouldn't be too dificult to design for or follow.**
+**If you are thinking about or are designing an add-on board for the Raspberry Pi B+ please read and follow this design guide carefully and make sure the requirements are met. There aren't too many hard requirements, and they shouldn't be too difficult to design for or follow.**
 
 While we cannot force anyone to follow this guide, any boards which break the rules (and therefore may cause incompatibility or issues for end users) will not be looked on very favourably. You have been warned.
 
@@ -30,7 +30,7 @@ The following rules **must** be followed when designing a stackable board.
 
 #### GPIO Pin Usage Rules for Stackable Boards
 
-Note that after power-on the bank 0 GPIOs on GPIO header J8 (except ID_SD and ID_SC which are GPIO0 and 1 respectiveley) will be inputs with either a pull up or pull down. The default pull state can be found in the BCM2835 peripherals specificaion[] section 6.2 table 6-31 (see the "Pull" column).
+Note that after power-on the bank 0 GPIOs on GPIO header J8 (except ID_SD and ID_SC which are GPIO0 and 1 respectiveley) will be inputs with either a pull up or pull down. The default pull state can be found in the BCM2835 peripherals specification[] section 6.2 table 6-31 (see the "Pull" column).
 
 **Output Pins**
 
@@ -46,13 +46,13 @@ An output must either:
 
 At power-on these must be inputs. Note that a weak pull on a bidirectional pin is allowed **but only if it is pulling in the same direction as the default power-on GPIO pull.**
 
-An add-on board **must not** provide a pull on a bidirectional pin that is opposite to the default GPIO pull, as this can cause an undefined state on the pin, and potentially other stacked boards (most likeley incompatible ones) may rely on the pull state of a pin to hold their output pins in a disabled (i.e. not driving) state.
+An add-on board **must not** provide a pull on a bidirectional pin that is opposite to the default GPIO pull, as this can cause an undefined state on the pin, and potentially other stacked boards (most likely incompatible ones) may rely on the pull state of a pin to hold their output pins in a disabled (i.e. not driving) state.
 
 **Input Pins**
 
 The user must be aware that pins will, at power on, be set to the default power on state (pulled high or low) depending on the default pull up/down for that particular GPIO.
 
-An add-on board **must not** provide a pull on an input that is opposite to the default GPIO pull, as this can cause an undefined state on the pin, and potentially other stacked boards (most likeley incompatible ones) may rely on the pull state of a pin to hold their output pins in a disabled (i.e. not driving) state.
+An add-on board **must not** provide a pull on an input that is opposite to the default GPIO pull, as this can cause an undefined state on the pin, and potentially other stacked boards (most likely incompatible ones) may rely on the pull state of a pin to hold their output pins in a disabled (i.e. not driving) state.
 
 #### ID EEPROM Rules for Stackable Boards
 
@@ -95,7 +95,7 @@ The [following drawing](hat-board-mechanical.pdf) gives mechanical detials of HA
 
 It is possible to power the Pi by supplying 5V thourhg the GPIO header (J8) pins 2,4 and GND. The acceptable input voltage range is 5V ±5%.
 
-On the Pi, the 5V GPIO header pins connect to the 5V net after the micro-USB input, polyfuse and input 'ideal' safety diode (made up of the PFET and matched PNP transistors). The 'safety' diode stops any apreciable current flowing back out of the 5V micro USB should the 5V net on the board be at a higher voltage.
+On the Pi, the 5V GPIO header pins connect to the 5V net after the micro-USB input, polyfuse and input 'ideal' safety diode (made up of the PFET and matched PNP transistors). The 'safety' diode stops any appreciable current flowing back out of the 5V micro USB should the 5V net on the board be at a higher voltage than the 5V micro USB input.
 
 If the Pi is going to be back-powered via the 5V GPIO header pins it is **strongly recommended** to implement a duplicate power safety diode before the HAT 5V net (which then feeds power back through the 5V GPIO pins).
 
