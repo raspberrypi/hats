@@ -64,6 +64,7 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
 ### GPIO map atom data (type=0x0002):
 
   GPIO map for bank 0 GPIO on 40W B+ header.
+  **NOTE** GPIO number refers to BCM2835 GPIO pin number and **NOT** J8 pin number!
 
 ```
   Bytes   Field
