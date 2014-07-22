@@ -30,23 +30,17 @@ Raspberry Pi models A and B use some bank 0 GPIOs for board control functions an
     GPIO14 -> UART_TX
     GPIO16 -> STATUS_LED
 
-XXX link to pinout where these pins are on the connector.
-
-
 **If a user boots a B+ with legacy firmware these pins may get driven so it is recommended to avoid driving these from a HAT, or use a current limiting resistor if that is not possible. Note also that relying on the pull state of these pins during boot is not advisable.** 
 
 It is also strongly recommended to ship a clear warning notice with your HAT that updated firmware must be used, and clear instructions for how to update the firmware on the Pi before plugging in the HAT.
 
 ## ID EEPROM
 
-Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0/SCL and GPIO1/SDA) are reserved solely for attaching an I2C 'ID' EEPROM.
-
-XXX specify the eeprom address(es)? Specify which addresses to avoid
-(that the camera uses?)
+Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0/SCL and GPIO1/SDA) are reserved solely for attaching an I2C 'ID' EEPROM (**Do not connect anything else to these pins**).
 
 The ID EEPROM is interrogated at boot time and provides the Pi with the required GPIO setup (pin settings and functions) for the HAT as well as a binary Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards. Note that the device tree fragment is optional but strongly recommended. (NB docs for how to create this are on their way...)
 
-Pull-ups must be provided on the top board for ID_SC and ID_SD  (SCL and SDA respectively) to 3V3. The recommended pull-up value is 2.2K.
+Pull-ups must be provided on the top board for ID_SC and ID_SD  (SCL and SDA respectively) to 3V3. The recommended pull-up value is 3.9K.
 
 A 24Cxx type I2C EEPROM must be used. The device must be powered from 3V3 (avoid the 5V only variants). A recommended part is OnSemi CAT24Cxx, for example CAT24C32 for a 32kbit device. The minimum EEPROM size required is variable and depends on the size of the vendor data strings in the EEPROM and whether a device tree data blob is included (and its size) and whether any other vendor specific data is included.
 
