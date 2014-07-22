@@ -36,7 +36,7 @@ It is also strongly recommended to ship a clear warning notice with your HAT tha
 
 ## ID EEPROM
 
-Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0/SCL and GPIO1/SDA) are reserved solely for attaching an I2C 'ID' EEPROM (**Do not connect anything else to these pins**).
+Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0/SCL and GPIO1/SDA) **are reserved solely for attaching an I2C 'ID' EEPROM, do not connect anything else to these pins**.
 
 The ID EEPROM is interrogated at boot time and provides the Pi with the required GPIO setup (pin settings and functions) for the HAT as well as a binary Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards. Note that the device tree fragment is optional but strongly recommended. (NB docs for how to create this are on their way...)
 
