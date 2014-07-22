@@ -25,9 +25,13 @@ In the new B+ firmware after power-on the bank 0 GPIOs on GPIO header J8 (except
 GPIO pins ID_SC and ID_SD (GPIO0 and GPIO1) are reserved for use solely for board identification. **An I2C EEPROM plus pull-up resistors should be the only connections to these pins.**
 
 Raspberry Pi models A and B use some bank 0 GPIOs for board control functions and UART output:
-GPIO6 -> LAN_RUN
-GPIO14 -> UART_TX
-GPIO16 -> STATUS_LED
+
+    GPIO6 -> LAN_RUN
+    GPIO14 -> UART_TX
+    GPIO16 -> STATUS_LED
+
+XXX link to pinout where these pins are on the connector.
+
 
 **If a user boots a B+ with legacy firmware these pins may get driven so it is recommended to avoid driving these from a HAT, or use a current limiting resistor if that is not possible. Note also that relying on the pull state of these pins during boot is not advisable.** 
 
@@ -37,11 +41,14 @@ It is also strongly recommended to ship a clear warning notice with your HAT tha
 
 Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0/SCL and GPIO1/SDA) are reserved solely for attaching an I2C 'ID' EEPROM.
 
+XXX specify the eeprom address(es)? Specify which addresses to avoid
+(that the camera uses?)
+
 The ID EEPROM is interrogated at boot time and provides the Pi with the required GPIO setup (pin settings and functions) for the HAT as well as a binary Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards. Note that the device tree fragment is optional but strongly recommended. (NB docs for how to create this are on their way...)
 
 Pull-ups must be provided on the top board for ID_SC and ID_SD  (SCL and SDA respectively) to 3V3. The recommended pull-up value is 2.2K.
 
-A 24Cxx type I2C EEPROM must be used. The device must be powered from 3V3 (avoid the 5V only variants). A recommended part is OnSemi CAT24Cxx, for example CATC24C32 for a 32kbit device. The minimum EEPROM size required is variable and depends on the size of the vendor data strings in the EEPROM and whether a device tree data blob is included (and its size) and whether any other vendor specific data is included.
+A 24Cxx type I2C EEPROM must be used. The device must be powered from 3V3 (avoid the 5V only variants). A recommended part is OnSemi CAT24Cxx, for example CAT24C32 for a 32kbit device. The minimum EEPROM size required is variable and depends on the size of the vendor data strings in the EEPROM and whether a device tree data blob is included (and its size) and whether any other vendor specific data is included.
 
 It is recommended that EEPROM WP (write protect) pin be connected to a test point on the board and pulled up to 3V3 with a 1K resistor. The idea is that at board test/probe the EEPROM can be written (WP pin can be driven LOW), but there is no danger of a user accidentally changing the device contents once the board leaves the factory. Note that the recommended device has an internal pull down hence the stiff (1K) pull up is required. Note that on some devices WP does not write protect the entire array (e.g. some Microchip variants) – avoid using these.
 It may be desirable for a HAT to have the ability for its EEPROM to be reflashed by an end user, in this case it is recommended to also include a user settable jumper (or dip switch) to short WP to GND and make the EEPROM writable once more. At least this way a user has to perform a specific action to make the EEPROM writeable again before being able to re-flash it and a suitable warning process can be put in place to make sure the correct image is used.

@@ -5,7 +5,7 @@
 # then use eepflash tool to write to attached HAT ID EEPROM 
 #
 # Tools available:
-#  eepmake   Pareses EEPROM text file and createds binary .eep file
+#  eepmake   Parses EEPROM text file and creates binary .eep file
 #  eepdump   Dumps a binary .eep file as human readable text (for debug)
 #  eepflash  Write or read .eep binary image to/from HAT EEPROM
 #
@@ -49,7 +49,7 @@ gpio_hyteresis 0
 # GPIO pins, uncomment for GPIOs used on board
 # Options for FUNCTION: INPUT, OUTPUT, ALT0-ALT5
 # Options for PULL: DEFAULT, UP, DOWN, NONE
-# NB GPIO0,1 are reserved for ID EEPROM so cannot be set
+# NB GPIO0 and GPIO1 are reserved for ID EEPROM so cannot be set
 
 #         GPIO  FUNCTION  PULL
 #         ----  --------  ----
