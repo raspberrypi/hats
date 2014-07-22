@@ -61,7 +61,7 @@ The [following drawing](hat-board-mechanical.pdf) gives mechanical detials of HA
 
 ## Back Powering the Pi via the J8 GPIO Header
 
-It is possible to power the Pi by supplying 5V thourhg the GPIO header (J8) pins 2,4 and GND. The acceptable input voltage range is 5V ±5%.
+It is possible to power the Pi by supplying 5V through the GPIO header (J8) pins 2,4 and GND. The acceptable input voltage range is 5V ±5%.
 
 On the Pi, the 5V GPIO header pins connect to the 5V net after the micro-USB input, polyfuse and input 'ideal' safety diode (made up of the PFET and matched PNP transistors). The 'safety' diode stops any appreciable current flowing back out of the 5V micro USB should the 5V net on the board be at a higher voltage than the 5V micro USB input.
 
