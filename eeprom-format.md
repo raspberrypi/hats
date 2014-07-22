@@ -24,6 +24,8 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
   1       reserved    set to 0
   2       numatoms    total atoms in EEPROM
   4       eeplen      total length in bytes of all eeprom data (including this header)
+XXX CRC16???
+
 ```
 
 ## Atom Structure
@@ -44,7 +46,7 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
   0x0002 = GPIO map
   0x0003 = Linux device tree blob
   0x0004 = manufacturer custom data
-  0x0005-0xffff = reserved for future use
+  0x0005-0xfffe = reserved for future use
   0xffff = invalid
 ```
 
@@ -80,8 +82,11 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
             [6:5] pulltype    0=leave at default setting,  1=pullup, 2=pulldown, 3=no pull
             [  7] is_used     1=board uses this pin, 0=not connected and therefore not used
 ```
+XXX define / link to mapping between GPIO pin numbers and the
+pins on the connector. 
 
 ### Device tree atom data (type=0x0003):
 
 Binary DT blob fragment for board hardware.
 
+XXX todo.
