@@ -24,8 +24,6 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
   1       reserved    set to 0
   2       numatoms    total atoms in EEPROM
   4       eeplen      total length in bytes of all eeprom data (including this header)
-XXX CRC16???
-
 ```
 
 ## Atom Structure
@@ -82,11 +80,7 @@ XXX CRC16???
             [6:5] pulltype    0=leave at default setting,  1=pullup, 2=pulldown, 3=no pull
             [  7] is_used     1=board uses this pin, 0=not connected and therefore not used
 ```
-XXX define / link to mapping between GPIO pin numbers and the
-pins on the connector. 
 
 ### Device tree atom data (type=0x0003):
 
-Binary DT blob fragment for board hardware.
-
-XXX todo.
+Binary data (DT blob fragment for board hardware).
