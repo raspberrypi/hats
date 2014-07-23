@@ -84,6 +84,7 @@ int write_binary(char* out) {
 	free(current_atom);
 	
 	if (has_dt) {
+		printf("Writing out DT...\n");
 		current_atom = (char *) malloc(dt_atom.dlen+8);
 		offset = 0;
 		
@@ -118,6 +119,7 @@ int write_binary(char* out) {
 		fwrite(current_atom, offset, 1, fp);
 		free(current_atom);
 	}
+	
 	
 	fflush(fp);
 	fclose(fp);
@@ -443,12 +445,52 @@ int read_text(char* in) {
 	return 0;
 }
 
+
+int read_dt(char* in) {
+	FILE * fp;
+	unsigned long size = 0;
+	
+	printf("Opening DT file %s for read\n", in);
+	
+	fp = fopen(in, "r");
+	if (fp == NULL) {
+		printf("Error opening input file\n");
+		return -1;
+	}
+	
+	fseek(fp, 0L, SEEK_END);
+	size = ftell(fp);
+	fseek(fp, 0L, SEEK_SET);
+	
+	printf("Adding %lu bytes of DT data\n", size);
+	
+	total_size+=ATOM_SIZE+size;
+	has_dt = true;
+	dt_atom.type = ATOM_DT;
+	dt_atom.count = 2;
+	dt_atom.dlen = size+2;
+	
+	dt_atom.data = (char *) malloc(size);
+	if (!fread(dt_atom.data, size, 1, fp)) goto err;
+	
+	
+	fclose(fp);
+	return 0;
+	
+err:
+	printf("Unexpected EOF or error occurred\n");
+	fclose(fp);
+	return 0;
+	
+}
+
 int main(int argc, char *argv[]) {
 	int ret;
 	int i;
 	
 	if (argc<3) {
-		printf("Wrong input format.\n"); //todo: display help
+		printf("Wrong input format.\n");
+		printf("Try 'eepmake input_file output_file [dt_file]'\n");
 		return 0;
 	}
 	
@@ -457,6 +499,16 @@ int main(int argc, char *argv[]) {
 	if (ret) {
 		printf("Error reading and parsing input, aborting\n");
 		return 0;
+	}
+	
+	if (argc>3) {
+		//DT file specified
+		total_size-=(ATOM_SIZE +dt_atom.dlen - 2);
+		ret = read_dt(argv[3]);
+		if (ret) {
+			printf("Error reading DT file, aborting\n");
+			return 0;
+		}
 	}
 	
 	header.signature = HEADER_SIGN;
