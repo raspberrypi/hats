@@ -50,9 +50,14 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
 
 ### Vendor info atom data (type=0x0001):
 
+Note that the guid is mandatory and must be filled in correctly (every HAT can then be uniquely identified).
+It protects agains the case where a user accidentally stacks 2 identical HATs on top of each
+other - this error case is only detectable if the EEPROM data in each is different.
+The guid is also useful for manufacturers as a per-board 'serial number'.
+
 ```
   Bytes   Field
-  4       serial      product serial number
+  16      guid        GUID (must be unique for every manufactured board)
   2       pid         product ID
   2       pver        product version
   1       vslen       vendor string length (bytes)
