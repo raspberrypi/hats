@@ -14,6 +14,7 @@
 #define GPIO_MAX 28
 #define HEADER_SIGN 0x522d5069 //"R-Pi" in ASCII
 
+
 //todo: larger initial mallocs
 
 struct header_t header;
@@ -27,23 +28,13 @@ bool product_serial_set, product_id_set, product_ver_set, vendor_set, product_se
 bool data_receive, has_dt, receive_dt;
 			
 char **data;
+char *current_atom; //rearranged to write out
 unsigned int data_len, custom_ct, total_size, data_cap, custom_cap;
-
-int startsWith(const char *pre, const char *str)
-{
-    size_t lenpre = strlen(pre),
-           lenstr = strlen(str);
-    return lenstr < lenpre ? 0 : strncmp(pre, str, lenpre) == 0;
-}
-
-short getcrc(struct atom_t atom) {
-	return 0;
-}
 
 
 int write_binary(char* out) {
 	FILE *fp;
-	int i;
+	int i, offset;
 	short crc;
 	
 	fp=fopen(out, "wb");
@@ -55,40 +46,77 @@ int write_binary(char* out) {
 	fwrite(&header, sizeof(header), 1, fp);
 		
 		
+	current_atom = (char *) malloc(vinf_atom.dlen+8);
+	offset = 0;
 	//vendor information atom first part
-	fwrite(&vinf_atom, 8, 1, fp);
+	memcpy(current_atom, &vinf_atom, 8);
+	offset += 8;
 	//data first part
-	fwrite(vinf_atom.data, 10, 1, fp);
+	memcpy(current_atom+offset, vinf_atom.data, 10);
+	offset += 10;	
 	//data strings
-	fwrite(vinf->vstr, vinf->vslen, 1, fp);
-	fwrite(vinf->pstr, vinf->pslen, 1, fp);
+	memcpy(current_atom+offset, vinf->vstr, vinf->vslen);
+	offset += vinf->vslen;
+	memcpy(current_atom+offset, vinf->pstr, vinf->pslen);
+	offset += vinf->pslen;
 	//vinf last part
-	crc = getcrc(vinf_atom);
-	fwrite(&crc, 2, 1, fp);
+	crc = getcrc(current_atom, offset);
+	memcpy(current_atom+offset, &crc, 2);
+	offset += 2;
 	
+	fwrite(current_atom, offset, 1, fp);
+	free(current_atom);
 	
+	current_atom = (char *) malloc(gpio_atom.dlen+8);
+	offset = 0;
 	//GPIO map first part
-	fwrite(&gpio_atom, 8, 1, fp);
+	memcpy(current_atom, &gpio_atom, 8);
+	offset += 8;
 	//GPIO data
-	fwrite(gpiomap, 30, 1, fp);
+	memcpy(current_atom+offset, gpiomap, 30);
+	offset += 30;
 	//GPIO map last part
-	crc = getcrc(gpio_atom);
-	fwrite(&crc, 2, 1, fp);
+	crc = getcrc(current_atom, offset);
+	memcpy(current_atom+offset, &crc, 2);
+	offset += 2;
+	
+	fwrite(current_atom, offset, 1, fp);
+	free(current_atom);
 	
 	if (has_dt) {
-		fwrite(&dt_atom, 8, 1, fp);
+		current_atom = (char *) malloc(dt_atom.dlen+8);
+		offset = 0;
 		
-		fwrite(dt_atom.data, dt_atom.dlen-2, 1, fp);
-		crc = getcrc(dt_atom);
-		fwrite(&crc, 2, 1, fp);
+		memcpy(current_atom, &dt_atom, 8);
+		offset += 8;
+		
+		memcpy(current_atom+offset, dt_atom.data, dt_atom.dlen-2);
+		offset += dt_atom.dlen-2;
+		
+		crc = getcrc(current_atom, offset);
+		memcpy(current_atom+offset, &crc, 2);
+		offset += 2;
+		
+		fwrite(current_atom, offset, 1, fp);
+		free(current_atom);
 	}
 	
 	for (i = 0; i<custom_ct; i++) {
+		current_atom = (char *) malloc(custom_atom[i].dlen+8);
+		offset = 0;
 		
-		fwrite(&custom_atom[i], 8, 1, fp);
-		fwrite(custom_atom[i].data, custom_atom[i].dlen-2, 1, fp);
-		crc = getcrc(custom_atom[i]);
-		fwrite(&crc, 2, 1, fp);
+		memcpy(current_atom, &custom_atom[i], 8);
+		offset += 8;
+		
+		memcpy(current_atom+offset, custom_atom[i].data, custom_atom[i].dlen-2);
+		offset += custom_atom[i].dlen-2;
+		
+		crc = getcrc(current_atom, offset);
+		memcpy(current_atom+offset, &crc, 2);
+		offset += 2;
+		
+		fwrite(current_atom, offset, 1, fp);
+		free(current_atom);
 	}
 	
 	fflush(fp);
@@ -368,13 +396,13 @@ int read_text(char* in) {
 	vinf_atom.type = ATOM_VENDOR_INFO;
 	vinf_atom.count = 0;
 	vinf = (struct vendor_info_d *) malloc(sizeof(struct vendor_info_d));
-	vinf_atom.data = vinf;
+	vinf_atom.data = (char *)vinf;
 	vinf_atom.dlen = VENDOR_SIZE + 2;
 	
 	gpio_atom.type = ATOM_GPIO_MAP;
 	gpio_atom.count = 1;
 	gpiomap = (struct gpio_map_d *) malloc(sizeof(struct gpio_map_d));
-	gpio_atom.data = gpiomap;
+	gpio_atom.data = (char *)gpiomap;
 	gpio_atom.dlen = GPIO_SIZE + 2;
 	
 	while ((read = getline(&line, &len, fp)) != -1) {

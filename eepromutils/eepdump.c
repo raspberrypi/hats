@@ -14,7 +14,7 @@ unsigned char* data;
 
 int read_bin(char *in, char *outf) {
 
-	unsigned int swallow;
+	unsigned short crc;
 	FILE *fp, *out;
 	int i,j;
 	
@@ -43,8 +43,16 @@ int read_bin(char *in, char *outf) {
 	
 		if (!fread(&atom, ATOM_SIZE-2, 1, fp)) goto err;
 		
+		printf("Reading atom %d...\n", i);
 		
 		fprintf(out, "# Atom %u of type 0x%04x and length %u\n", atom.count, atom.type, atom.dlen);
+		
+		unsigned long pos = ftell(fp);
+		char *atom_data = (char *) malloc(atom.dlen + ATOM_SIZE-2);
+		memcpy(atom_data, &atom, ATOM_SIZE-2);
+		if (!fread(atom_data+ATOM_SIZE-2, atom.dlen, 1, fp)) goto err;
+		unsigned short calc_crc = getcrc(atom_data, atom.dlen-2+ATOM_SIZE-2);
+		fseek(fp, pos, SEEK_SET);
 		
 		if (atom.type==1) {
 			//decode vendor info
@@ -67,7 +75,7 @@ int read_bin(char *in, char *outf) {
 			
 			fprintf(out, "\n\n");
 			
-			if (!fread(&swallow, 2, 1, fp)) goto err;
+			if (!fread(&crc, 2, 1, fp)) goto err;
 			
 		} else if (atom.type==2) {
 			//decode GPIO map
@@ -122,7 +130,7 @@ int read_bin(char *in, char *outf) {
 			
 			fprintf(out, "\n\n");
 			
-			if (!fread(&swallow, 2, 1, fp)) goto err;
+			if (!fread(&crc, 2, 1, fp)) goto err;
 			
 		} else if (atom.type==3) {
 			//decode DT blob
@@ -132,13 +140,13 @@ int read_bin(char *in, char *outf) {
 			if (!fread(data, atom.dlen-2, 1, fp)) goto err;
 			
 			for (j = 0; j<atom.dlen-2; j++) {
-				if (j % 8 == 0) fprintf(out, "\n");
+				if (j % 16 == 0) fprintf(out, "\n");
 				fprintf(out, "%02X ", *(data+j));
 			}
 			
 			fprintf(out, "\n\n\n");
 			
-			if (!fread(&swallow, 2, 1, fp)) goto err;
+			if (!fread(&crc, 2, 1, fp)) goto err;
 			
 		} else if (atom.type==4) {
 			//decode custom data
@@ -148,19 +156,27 @@ int read_bin(char *in, char *outf) {
 			if (!fread(data, atom.dlen-2, 1, fp)) goto err;
 			
 			for (j = 0; j<atom.dlen-2; j++) {
-				if (j % 8 == 0) fprintf(out, "\n");
+				if (j % 16 == 0) fprintf(out, "\n");
 				fprintf(out, "%02X ", *(data+j));
 			}
 			
 			fprintf(out, "\n\n\n");
 			
-			if (!fread(&swallow, 2, 1, fp)) goto err;
+			if (!fread(&crc, 2, 1, fp)) goto err;
 			
 			
 		} else {
 			printf("Error: unrecognised atom type\n");
 			fprintf(out, "# Error: unrecognised atom type\n");
+			goto err;
 		}
+		
+		
+		if (calc_crc != crc) {
+			printf("Error: atom CRC16 mismatch\n");
+			fprintf(out, "# Error: atom CRC16 mismatch. Claimed CRC16=0x%02x, calculated CRC16=0x%02x", crc, calc_crc);
+		} else printf("CRC OK\n");
+		
 	
 	}
 	
