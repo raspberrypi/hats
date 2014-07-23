@@ -199,7 +199,8 @@ int main(int argc, char *argv[]) {
 	int i;
 	
 	if (argc<3) {
-		printf("Wrong input format.\n"); //todo: display help
+		printf("Wrong input format.\n");
+		printf("Try 'eepdump input_file output_file'\n");
 		return 0;
 	}
 	
