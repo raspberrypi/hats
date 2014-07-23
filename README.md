@@ -42,9 +42,15 @@ Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0/S
 
 The ID EEPROM is interrogated at boot time and provides the Pi with the required GPIO setup (pin settings and functions) for the HAT as well as a binary Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards. Note that the device tree fragment is optional but strongly recommended. (NB docs for how to create this are on their way...)
 
-Pull-ups must be provided on the top board for ID_SC and ID_SD  (SCL and SDA respectively) to 3V3. The recommended pull-up value is 3.9K.
+Pull-ups must be provided on the top board for ID_SC and ID_SD  (SCL and SDA respectively) to 3V3. The required pull-up value is 3.9K.
 
-A 24Cxx type I2C EEPROM must be used. The device must be powered from 3V3 (avoid the 5V only variants) and only needs to support 100kHz I2C mode. Devices that perform I2C clock stretching are not supported.
+**EEPROM Device Specification***
+
+- 24Cxx type 3.3V I2C EEPROM must be used (some types are 5V only, do not use these).
+- The EEPROM must be of the **16-bit** addressable type (**do not use ones with 8-bit addressing, this means most EEPROMS of 2kbit and smaller cannot be used**)
+- Do not use 'paged' type EEPROMS where the I2C lower address bit(s) select the EEPROM page.
+- Only required to support 100kHz I2C mode.
+- Devices that perform I2C clock stretching are not supported.
 
 A recommended part is OnSemi CAT24Cxx, for example CAT24C32 for a 32kbit device. The minimum EEPROM size required is variable and depends on the size of the vendor data strings in the EEPROM and whether a device tree data blob is included (and its size) and whether any other vendor specific data is included.
 
@@ -53,7 +59,7 @@ It may be desirable for a HAT to have the ability for its EEPROM to be reflashed
 
 Address pins where present on a device should be set to zero. (NB reduced pin count variants of the recommended device – e.g. SOT23-5 package - usually have A[2:0] set to 0 anyway).
 
-Details of the EEPROM format can be found in the [EEPROM format specification](eeprom-format.md). [Software tools](./eepromutils) are available for creation of valid EEPROM images, to flash an image or read and dump and image to/from an attached HAT EEPROM.
+Details of the EEPROM data format can be found in the [EEPROM format specification](eeprom-format.md). [Software tools](./eepromutils) are available for creation of valid EEPROM images, to flash an image or read and dump and image to/from an attached HAT EEPROM.
 
 [The following schematic fragment](eeprom-circuit.png) is an example of connecting an EEPROM  including a jumper and probe point to disable write protect.
 
