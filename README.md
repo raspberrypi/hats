@@ -44,10 +44,10 @@ The ID EEPROM is interrogated at boot time and provides the Pi with the required
 
 Pull-ups must be provided on the top board for ID_SC and ID_SD  (SCL and SDA respectively) to 3V3. The required pull-up value is 3.9K.
 
-**EEPROM Device Specification***
+**EEPROM Device Specification**
 
 - 24Cxx type 3.3V I2C EEPROM must be used (some types are 5V only, do not use these).
-- The EEPROM must be of the **16-bit** addressable type (**do not use ones with 8-bit addressing, this means most EEPROMS of 2kbit and smaller cannot be used**)
+- The EEPROM must be of the **16-bit** addressable type (**do not use ones with 8-bit addressing, this means most EEPROMs of 2kbit and smaller cannot be used**)
 - Do not use 'paged' type EEPROMS where the I2C lower address bit(s) select the EEPROM page.
 - Only required to support 100kHz I2C mode.
 - Devices that perform I2C clock stretching are not supported.
