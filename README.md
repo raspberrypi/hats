@@ -48,7 +48,7 @@ Pull-ups must be provided on the top board for ID_SC and ID_SD  (SCL and SDA res
 
 - 24Cxx type 3.3V I2C EEPROM must be used (some types are 5V only, do not use these).
 - The EEPROM must be of the **16-bit** addressable type (**do not use ones with 8-bit addressing**)
-- Do not use 'paged' type EEPROMS where the I2C lower address bit(s) select the EEPROM page.
+- Do not use 'paged' type EEPROMs where the I2C lower address bit(s) select the EEPROM page.
 - Only required to support 100kHz I2C mode.
 - Devices that perform I2C clock stretching are not supported.
 - Write protect pin must be supported and protect the entire device memory.
