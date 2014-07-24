@@ -45,7 +45,7 @@ int read_bin(char *in, char *outf) {
 		
 		printf("Reading atom %d...\n", i);
 		
-		fprintf(out, "# Atom %u of type 0x%04x and length %u\n", atom.count, atom.type, atom.dlen);
+		fprintf(out, "# Start of atom #%u of type 0x%04x and length %u\n", atom.count, atom.type, atom.dlen);
 		
 		unsigned long pos = ftell(fp);
 		char *atom_data = (char *) malloc(atom.dlen + ATOM_SIZE-CRC_SIZE);
@@ -60,7 +60,7 @@ int read_bin(char *in, char *outf) {
 			if (!fread(&vinf, VENDOR_SIZE, 1, fp)) goto err;
 			
 			fprintf(out, "# Vendor info\n");
-			fprintf(out, "product_guid 0x%08x_%08x_%08x_%08x\n", vinf.serial_4, vinf.serial_3, vinf.serial_2, vinf.serial_1);
+			fprintf(out, "product_uuid %08x-%04x-%04x-%04x-%04x%08x\n", vinf.serial_4, vinf.serial_3>>16, vinf.serial_3 & 0xffff, vinf.serial_2>>16, vinf.serial_2 & 0xffff, vinf.serial_1);
 			fprintf(out, "product_id 0x%04x\n", vinf.pid);
 			fprintf(out, "product_ver 0x%04x\n", vinf.pver);
 			
@@ -73,10 +73,8 @@ int read_bin(char *in, char *outf) {
 			vinf.vstr[vinf.vslen] = 0;
 			vinf.pstr[vinf.pslen] = 0;
 			
-			fprintf(out, "vendor \"%s\"\n", vinf.vstr);
-			fprintf(out, "product \"%s\"\n", vinf.pstr);
-			
-			fprintf(out, "\n\n");
+			fprintf(out, "vendor \"%s\"   # length=%u\n", vinf.vstr, vinf.vslen);
+			fprintf(out, "product \"%s\"   # length=%u\n", vinf.pstr, vinf.pslen);
 			
 			if (!fread(&crc, CRC_SIZE, 1, fp)) goto err;
 			
@@ -131,8 +129,6 @@ int read_bin(char *in, char *outf) {
 				}
 			}
 			
-			fprintf(out, "\n\n");
-			
 			if (!fread(&crc, CRC_SIZE, 1, fp)) goto err;
 			
 		} else if (atom.type==ATOM_DT_TYPE) {
@@ -147,7 +143,7 @@ int read_bin(char *in, char *outf) {
 				fprintf(out, "%02X ", *(data+j));
 			}
 			
-			fprintf(out, "\n\n\n");
+			fprintf(out, "\n");
 			
 			if (!fread(&crc, CRC_SIZE, 1, fp)) goto err;
 			
@@ -163,7 +159,7 @@ int read_bin(char *in, char *outf) {
 				fprintf(out, "%02X ", *(data+j));
 			}
 			
-			fprintf(out, "\n\n\n");
+			fprintf(out, "\n");
 			
 			if (!fread(&crc, CRC_SIZE, 1, fp)) goto err;
 			
@@ -174,12 +170,14 @@ int read_bin(char *in, char *outf) {
 			goto err;
 		}
 		
+		fprintf(out, "# End of atom. CRC16=0x%04x\n", crc);
 		
 		if (calc_crc != crc) {
 			printf("Error: atom CRC16 mismatch\n");
-			fprintf(out, "# Error: atom CRC16 mismatch. Claimed CRC16=0x%02x, calculated CRC16=0x%02x", crc, calc_crc);
+			fprintf(out, "# Error: atom CRC16 mismatch. Calculated CRC16=0x%02x", crc, calc_crc);
 		} else printf("CRC OK\n");
 		
+		fprintf(out, "\n\n");
 	
 	}
 	

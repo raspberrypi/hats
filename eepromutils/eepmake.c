@@ -8,12 +8,12 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
+#include <fcntl.h>
 
 #include "eeptypes.h"
 
 #define GPIO_MAX 28
-#define HEADER_SIGN 0x522d5069 //"R-Pi" in ASCII
-
+#define HEADER_SIGN 0x69502d52 //"R-Pi" in ASCII reversed for endianness
 
 //todo: larger initial mallocs
 
@@ -187,15 +187,40 @@ void finish_data() {
 
 void parse_command(char* cmd, char* c) {
 	int val;
+	uint32_t high1, high2;
 	char *fn, *pull;
 	char pin;
 	bool valid;
 	bool continue_data=false;
 	
 	/* Vendor info related part */
-	if (strcmp(cmd, "product_guid")==0) {
+	if (strcmp(cmd, "product_uuid")==0) {
 		product_serial_set = true; //required field
-		sscanf(c, "%100s 0x%08x_%08x_%08x_%08x\n", cmd, &vinf->serial_4, &vinf->serial_3, &vinf->serial_2, &vinf->serial_1);
+		high1 = 0; high2 = 0;
+		
+		sscanf(c, "%100s %08x-%04x-%04x-%04x-%04x%08x\n", cmd, &vinf->serial_4, 
+			&high1, &vinf->serial_3, &high2, &vinf->serial_2, &vinf->serial_1);
+		
+		vinf->serial_3 |= high1<<16;
+		vinf->serial_2 |= high2<<16;
+		
+		if ((vinf->serial_4==0) && (vinf->serial_3==0) && (vinf->serial_2==0) && (vinf->serial_1==0)) {
+			//read 128 random bits from /dev/urandom
+			int random_file = open("/dev/urandom", O_RDONLY);
+			ssize_t result = read(random_file, &vinf->serial_1, 16);
+			close(random_file);
+			if (result <= 0) printf("Unable to read from /dev/urandom to set up UUID");
+			else {
+				//put in the version
+				vinf->serial_3 = (vinf->serial_3 & 0xffff0fff) | 0x00004000;
+				
+				//put in the variant
+				vinf->serial_2 = (vinf->serial_2 & 0x3fffffff) | 0x80000000;
+				
+				printf("UUID=0x%08x_%08x_%08x_%08x\n", vinf->serial_4, vinf->serial_3, vinf->serial_2, vinf->serial_1);
+			}
+ 
+		}
 		
 	} else if (strcmp(cmd, "product_id")==0) {
 		product_id_set = true; //required field
