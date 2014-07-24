@@ -2,11 +2,11 @@
 
 all: eepmake eepdump
 	
-eepmake:
+eepmake: eeptypes.h eepmake.c
 	gcc eepmake.c -o eepmake -Wno-format
 
-eepdump:
-	gcc eepdump.c -o eepdump
+eepdump: eeptypes.h eepdump.c
+	gcc eepdump.c -o eepdump -Wno-format
 	
 clean:
-	rm eepmake eepdump
+	rm -f eepmake eepdump

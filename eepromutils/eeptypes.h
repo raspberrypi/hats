@@ -43,8 +43,10 @@ struct atom_t {
 
 /* Vendor info atom data */
 struct vendor_info_d {
-	uint64_t serial_low;
-	uint64_t serial_high;
+	uint32_t serial_1; //least significant
+	uint32_t serial_2;
+	uint32_t serial_3;
+	uint32_t serial_4; //most significant
 	uint16_t pid;
 	uint16_t pver;
 	unsigned char vslen;

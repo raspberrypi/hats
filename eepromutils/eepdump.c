@@ -60,15 +60,18 @@ int read_bin(char *in, char *outf) {
 			if (!fread(&vinf, VENDOR_SIZE, 1, fp)) goto err;
 			
 			fprintf(out, "# Vendor info\n");
-			fprintf(out, "product_serial 0x%016llx%016llx\n", vinf.serial_high, vinf.serial_low);
+			fprintf(out, "product_guid 0x%08x_%08x_%08x_%08x\n", vinf.serial_4, vinf.serial_3, vinf.serial_2, vinf.serial_1);
 			fprintf(out, "product_id 0x%04x\n", vinf.pid);
 			fprintf(out, "product_ver 0x%04x\n", vinf.pver);
 			
-			vinf.vstr = (char *) malloc(vinf.vslen);
-			vinf.pstr = (char *) malloc(vinf.pslen);
+			vinf.vstr = (char *) malloc(vinf.vslen+1);
+			vinf.pstr = (char *) malloc(vinf.pslen+1);
 			
 			if (!fread(vinf.vstr, vinf.vslen, 1, fp)) goto err;
 			if (!fread(vinf.pstr, vinf.pslen, 1, fp)) goto err;
+			//close strings
+			vinf.vstr[vinf.vslen] = 0;
+			vinf.pstr[vinf.pslen] = 0;
 			
 			fprintf(out, "vendor \"%s\"\n", vinf.vstr);
 			fprintf(out, "product \"%s\"\n", vinf.pstr);

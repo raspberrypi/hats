@@ -193,10 +193,9 @@ void parse_command(char* cmd, char* c) {
 	bool continue_data=false;
 	
 	/* Vendor info related part */
-	if (strcmp(cmd, "product_serial")==0) {
+	if (strcmp(cmd, "product_guid")==0) {
 		product_serial_set = true; //required field
-		sscanf(c, "%100s 0x%016llx%016llx\n", cmd, &vinf->serial_high, &vinf->serial_low);
-		printf("serial high = %llx, low=%llx\n", vinf->serial_high, vinf->serial_low);
+		sscanf(c, "%100s 0x%08x_%08x_%08x_%08x\n", cmd, &vinf->serial_4, &vinf->serial_3, &vinf->serial_2, &vinf->serial_1);
 		
 	} else if (strcmp(cmd, "product_id")==0) {
 		product_id_set = true; //required field
