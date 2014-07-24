@@ -52,7 +52,7 @@ int read_bin(char *in, char *outf) {
 			fprintf(out, "# Error: atom count mismatch\n");
 		}
 		
-		unsigned long pos = ftell(fp);
+		long pos = ftell(fp);
 		char *atom_data = (char *) malloc(atom.dlen + ATOM_SIZE-CRC_SIZE);
 		memcpy(atom_data, &atom, ATOM_SIZE-CRC_SIZE);
 		if (!fread(atom_data+ATOM_SIZE-CRC_SIZE, atom.dlen, 1, fp)) goto err;
@@ -185,6 +185,14 @@ int read_bin(char *in, char *outf) {
 		fprintf(out, "\n\n");
 	
 	}
+	
+	//Total length checks. We need header.eeplen=current_position=file_length.
+	long pos = ftell(fp);
+	fseek(fp, 0L, SEEK_END);
+	
+	if (pos!=ftell(fp)) printf("Error: Dump finished before EOF\n");
+	if (pos!=header.eeplen) printf("Error: Dump finished before length specified in header\n");
+	if (ftell(fp)!=header.eeplen) printf("Error: EOF does not match length specified in header\n");
 	
 	printf("Done.\n");
 	
