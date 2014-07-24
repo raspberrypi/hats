@@ -1,15 +1,23 @@
+#include <stdint.h>
+
 /* Atom types */
-#define ATOM_INVALID 	0x0000
-#define ATOM_VENDOR_INFO 0x0001
-#define ATOM_GPIO_MAP	0x0002
-#define ATOM_DT 		0x0003
-#define ATOM_CUSTOM		0x0004
-#define ATOM_HINVALID	0xffff
+#define ATOM_INVALID_TYPE 	0x0000
+#define ATOM_VENDOR_TYPE 0x0001
+#define ATOM_GPIO_TYPE	0x0002
+#define ATOM_DT_TYPE 		0x0003
+#define ATOM_CUSTOM_TYPE		0x0004
+#define ATOM_HINVALID_TYPE	0xffff
+
+#define ATOM_VENDOR_NUM 0x0000
+#define ATOM_GPIO_NUM 0x0001
+#define ATOM_DT_NUM 0x0002
+
 //minimal sizes of data structures
 #define HEADER_SIZE 12
 #define ATOM_SIZE 10
-#define VENDOR_SIZE 10
+#define VENDOR_SIZE 22
 #define GPIO_SIZE 30
+#define CRC_SIZE 2
 
 #define FORMAT_VERSION 0x01
 
@@ -17,27 +25,28 @@
 
 /* EEPROM header structure */
 struct header_t {
-	unsigned int signature;
+	uint32_t signature;
 	unsigned char ver;
 	unsigned char res;
-	unsigned short numatoms;
-	unsigned int eeplen;
+	uint16_t numatoms;
+	uint32_t eeplen;
 };
 
 /* Atom structure */
 struct atom_t {
-	unsigned short type;
-	unsigned short count;
-	unsigned int dlen;
+	uint16_t type;
+	uint16_t count;
+	uint32_t dlen;
 	char* data;
-	unsigned short crc16;
+	uint16_t crc16;
 };
 
 /* Vendor info atom data */
 struct vendor_info_d {
-	unsigned int serial;
-	unsigned short pid;
-	unsigned short pver;
+	uint64_t serial_low;
+	uint64_t serial_high;
+	uint16_t pid;
+	uint16_t pver;
 	unsigned char vslen;
 	unsigned char pslen;
 	char* vstr;
@@ -52,9 +61,9 @@ struct gpio_map_d {
 };
 
 
-unsigned short getcrc(char* data, unsigned int size) {
+uint16_t getcrc(char* data, unsigned int size) {
 	
-	unsigned short out = 0;
+	uint16_t out = 0;
     int bits_read = 0, bit_flag;
 	
     /* Sanity check: */
@@ -94,7 +103,7 @@ unsigned short getcrc(char* data, unsigned int size) {
     }
 
     // item c) reverse the bits
-    unsigned short crc = 0;
+    uint16_t crc = 0;
     i = 0x8000;
     int j = 0x0001;
     for (; i != 0; i >>=1, j <<= 1) {

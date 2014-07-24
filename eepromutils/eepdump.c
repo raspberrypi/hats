@@ -14,7 +14,7 @@ unsigned char* data;
 
 int read_bin(char *in, char *outf) {
 
-	unsigned short crc;
+	uint16_t crc;
 	FILE *fp, *out;
 	int i,j;
 	
@@ -41,26 +41,26 @@ int read_bin(char *in, char *outf) {
 	
 	for (i = 0; i<header.numatoms; i++) {
 	
-		if (!fread(&atom, ATOM_SIZE-2, 1, fp)) goto err;
+		if (!fread(&atom, ATOM_SIZE-CRC_SIZE, 1, fp)) goto err;
 		
 		printf("Reading atom %d...\n", i);
 		
 		fprintf(out, "# Atom %u of type 0x%04x and length %u\n", atom.count, atom.type, atom.dlen);
 		
 		unsigned long pos = ftell(fp);
-		char *atom_data = (char *) malloc(atom.dlen + ATOM_SIZE-2);
-		memcpy(atom_data, &atom, ATOM_SIZE-2);
-		if (!fread(atom_data+ATOM_SIZE-2, atom.dlen, 1, fp)) goto err;
-		unsigned short calc_crc = getcrc(atom_data, atom.dlen-2+ATOM_SIZE-2);
+		char *atom_data = (char *) malloc(atom.dlen + ATOM_SIZE-CRC_SIZE);
+		memcpy(atom_data, &atom, ATOM_SIZE-CRC_SIZE);
+		if (!fread(atom_data+ATOM_SIZE-CRC_SIZE, atom.dlen, 1, fp)) goto err;
+		uint16_t calc_crc = getcrc(atom_data, atom.dlen-CRC_SIZE+ATOM_SIZE-CRC_SIZE);
 		fseek(fp, pos, SEEK_SET);
 		
-		if (atom.type==1) {
+		if (atom.type==ATOM_VENDOR_TYPE) {
 			//decode vendor info
 			
-			if (!fread(&vinf, 10, 1, fp)) goto err;
+			if (!fread(&vinf, VENDOR_SIZE, 1, fp)) goto err;
 			
 			fprintf(out, "# Vendor info\n");
-			fprintf(out, "product_serial 0x%08x\n", vinf.serial);
+			fprintf(out, "product_serial 0x%016llx%016llx\n", vinf.serial_high, vinf.serial_low);
 			fprintf(out, "product_id 0x%04x\n", vinf.pid);
 			fprintf(out, "product_ver 0x%04x\n", vinf.pver);
 			
@@ -75,11 +75,11 @@ int read_bin(char *in, char *outf) {
 			
 			fprintf(out, "\n\n");
 			
-			if (!fread(&crc, 2, 1, fp)) goto err;
+			if (!fread(&crc, CRC_SIZE, 1, fp)) goto err;
 			
-		} else if (atom.type==2) {
+		} else if (atom.type==ATOM_GPIO_TYPE) {
 			//decode GPIO map
-			if (!fread(&gpiomap, 30, 1, fp)) goto err;
+			if (!fread(&gpiomap, GPIO_SIZE, 1, fp)) goto err;
 			
 			fprintf(out, "# GPIO map info\n");
 			fprintf(out, "gpio_drive %d\n", gpiomap.flags & 15); //1111
@@ -130,39 +130,39 @@ int read_bin(char *in, char *outf) {
 			
 			fprintf(out, "\n\n");
 			
-			if (!fread(&crc, 2, 1, fp)) goto err;
+			if (!fread(&crc, CRC_SIZE, 1, fp)) goto err;
 			
-		} else if (atom.type==3) {
+		} else if (atom.type==ATOM_DT_TYPE) {
 			//decode DT blob
 			
 			fprintf(out, "dt_blob");
-			data = (char *) malloc(atom.dlen-2);
-			if (!fread(data, atom.dlen-2, 1, fp)) goto err;
+			data = (char *) malloc(atom.dlen-CRC_SIZE);
+			if (!fread(data, atom.dlen-CRC_SIZE, 1, fp)) goto err;
 			
-			for (j = 0; j<atom.dlen-2; j++) {
+			for (j = 0; j<atom.dlen-CRC_SIZE; j++) {
 				if (j % 16 == 0) fprintf(out, "\n");
 				fprintf(out, "%02X ", *(data+j));
 			}
 			
 			fprintf(out, "\n\n\n");
 			
-			if (!fread(&crc, 2, 1, fp)) goto err;
+			if (!fread(&crc, CRC_SIZE, 1, fp)) goto err;
 			
-		} else if (atom.type==4) {
+		} else if (atom.type==ATOM_CUSTOM_TYPE) {
 			//decode custom data
 			
 			fprintf(out, "custom_data");
-			data = (char *) malloc(atom.dlen-2);
-			if (!fread(data, atom.dlen-2, 1, fp)) goto err;
+			data = (char *) malloc(atom.dlen-CRC_SIZE);
+			if (!fread(data, atom.dlen-CRC_SIZE, 1, fp)) goto err;
 			
-			for (j = 0; j<atom.dlen-2; j++) {
+			for (j = 0; j<atom.dlen-CRC_SIZE; j++) {
 				if (j % 16 == 0) fprintf(out, "\n");
 				fprintf(out, "%02X ", *(data+j));
 			}
 			
 			fprintf(out, "\n\n\n");
 			
-			if (!fread(&crc, 2, 1, fp)) goto err;
+			if (!fread(&crc, CRC_SIZE, 1, fp)) goto err;
 			
 			
 		} else {

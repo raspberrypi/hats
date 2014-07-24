@@ -46,14 +46,14 @@ int write_binary(char* out) {
 	fwrite(&header, sizeof(header), 1, fp);
 		
 		
-	current_atom = (char *) malloc(vinf_atom.dlen+8);
+	current_atom = (char *) malloc(vinf_atom.dlen+ATOM_SIZE-CRC_SIZE);
 	offset = 0;
 	//vendor information atom first part
-	memcpy(current_atom, &vinf_atom, 8);
-	offset += 8;
+	memcpy(current_atom, &vinf_atom, ATOM_SIZE-CRC_SIZE);
+	offset += ATOM_SIZE-2;
 	//data first part
-	memcpy(current_atom+offset, vinf_atom.data, 10);
-	offset += 10;	
+	memcpy(current_atom+offset, vinf_atom.data, VENDOR_SIZE);
+	offset += VENDOR_SIZE;	
 	//data strings
 	memcpy(current_atom+offset, vinf->vstr, vinf->vslen);
 	offset += vinf->vslen;
@@ -61,60 +61,60 @@ int write_binary(char* out) {
 	offset += vinf->pslen;
 	//vinf last part
 	crc = getcrc(current_atom, offset);
-	memcpy(current_atom+offset, &crc, 2);
-	offset += 2;
+	memcpy(current_atom+offset, &crc, CRC_SIZE);
+	offset += CRC_SIZE;
 	
 	fwrite(current_atom, offset, 1, fp);
 	free(current_atom);
 	
-	current_atom = (char *) malloc(gpio_atom.dlen+8);
+	current_atom = (char *) malloc(gpio_atom.dlen+ATOM_SIZE-CRC_SIZE);
 	offset = 0;
 	//GPIO map first part
-	memcpy(current_atom, &gpio_atom, 8);
-	offset += 8;
+	memcpy(current_atom, &gpio_atom, ATOM_SIZE-CRC_SIZE);
+	offset += ATOM_SIZE-CRC_SIZE;
 	//GPIO data
-	memcpy(current_atom+offset, gpiomap, 30);
-	offset += 30;
+	memcpy(current_atom+offset, gpiomap, GPIO_SIZE);
+	offset += GPIO_SIZE;
 	//GPIO map last part
 	crc = getcrc(current_atom, offset);
-	memcpy(current_atom+offset, &crc, 2);
-	offset += 2;
+	memcpy(current_atom+offset, &crc, CRC_SIZE);
+	offset += CRC_SIZE;
 	
 	fwrite(current_atom, offset, 1, fp);
 	free(current_atom);
 	
 	if (has_dt) {
 		printf("Writing out DT...\n");
-		current_atom = (char *) malloc(dt_atom.dlen+8);
+		current_atom = (char *) malloc(dt_atom.dlen+ATOM_SIZE-CRC_SIZE);
 		offset = 0;
 		
-		memcpy(current_atom, &dt_atom, 8);
-		offset += 8;
+		memcpy(current_atom, &dt_atom, ATOM_SIZE-CRC_SIZE);
+		offset += ATOM_SIZE-CRC_SIZE;
 		
-		memcpy(current_atom+offset, dt_atom.data, dt_atom.dlen-2);
-		offset += dt_atom.dlen-2;
+		memcpy(current_atom+offset, dt_atom.data, dt_atom.dlen-CRC_SIZE);
+		offset += dt_atom.dlen-CRC_SIZE;
 		
 		crc = getcrc(current_atom, offset);
-		memcpy(current_atom+offset, &crc, 2);
-		offset += 2;
+		memcpy(current_atom+offset, &crc, CRC_SIZE);
+		offset += CRC_SIZE;
 		
 		fwrite(current_atom, offset, 1, fp);
 		free(current_atom);
 	}
 	
 	for (i = 0; i<custom_ct; i++) {
-		current_atom = (char *) malloc(custom_atom[i].dlen+8);
+		current_atom = (char *) malloc(custom_atom[i].dlen+ATOM_SIZE-CRC_SIZE);
 		offset = 0;
 		
-		memcpy(current_atom, &custom_atom[i], 8);
-		offset += 8;
+		memcpy(current_atom, &custom_atom[i], ATOM_SIZE-CRC_SIZE);
+		offset += ATOM_SIZE-CRC_SIZE;
 		
-		memcpy(current_atom+offset, custom_atom[i].data, custom_atom[i].dlen-2);
-		offset += custom_atom[i].dlen-2;
+		memcpy(current_atom+offset, custom_atom[i].data, custom_atom[i].dlen-CRC_SIZE);
+		offset += custom_atom[i].dlen-CRC_SIZE;
 		
 		crc = getcrc(current_atom, offset);
-		memcpy(current_atom+offset, &crc, 2);
-		offset += 2;
+		memcpy(current_atom+offset, &crc, CRC_SIZE);
+		offset += CRC_SIZE;
 		
 		fwrite(current_atom, offset, 1, fp);
 		free(current_atom);
@@ -170,14 +170,14 @@ void finish_data() {
 		total_size+=ATOM_SIZE+data_len;
 
 		if (receive_dt) {
-			dt_atom.type = ATOM_DT;
-			dt_atom.count = 2;
-			dt_atom.dlen = data_len+2;
+			dt_atom.type = ATOM_DT_TYPE;
+			dt_atom.count = ATOM_DT_NUM;
+			dt_atom.dlen = data_len+CRC_SIZE;
 		} else {
 			//finish atom description
-			custom_atom[custom_ct].type = ATOM_CUSTOM;
+			custom_atom[custom_ct].type = ATOM_CUSTOM_TYPE;
 			custom_atom[custom_ct].count = 3+custom_ct;
-			custom_atom[custom_ct].dlen = data_len+2;
+			custom_atom[custom_ct].dlen = data_len+CRC_SIZE;
 			
 			custom_ct++;
 		}
@@ -195,7 +195,8 @@ void parse_command(char* cmd, char* c) {
 	/* Vendor info related part */
 	if (strcmp(cmd, "product_serial")==0) {
 		product_serial_set = true; //required field
-		sscanf(c, "%100s %x\n", cmd, &vinf->serial);
+		sscanf(c, "%100s 0x%016llx%016llx\n", cmd, &vinf->serial_high, &vinf->serial_low);
+		printf("serial high = %llx, low=%llx\n", vinf->serial_high, vinf->serial_low);
 		
 	} else if (strcmp(cmd, "product_id")==0) {
 		product_id_set = true; //required field
@@ -395,17 +396,17 @@ int read_text(char* in) {
 	
 	total_size=ATOM_SIZE*2+HEADER_SIZE+VENDOR_SIZE+GPIO_SIZE;
 	
-	vinf_atom.type = ATOM_VENDOR_INFO;
-	vinf_atom.count = 0;
+	vinf_atom.type = ATOM_VENDOR_TYPE;
+	vinf_atom.count = ATOM_VENDOR_NUM;
 	vinf = (struct vendor_info_d *) malloc(sizeof(struct vendor_info_d));
 	vinf_atom.data = (char *)vinf;
-	vinf_atom.dlen = VENDOR_SIZE + 2;
+	vinf_atom.dlen = VENDOR_SIZE + CRC_SIZE;
 	
-	gpio_atom.type = ATOM_GPIO_MAP;
-	gpio_atom.count = 1;
+	gpio_atom.type = ATOM_GPIO_TYPE;
+	gpio_atom.count = ATOM_GPIO_NUM;
 	gpiomap = (struct gpio_map_d *) malloc(sizeof(struct gpio_map_d));
 	gpio_atom.data = (char *)gpiomap;
-	gpio_atom.dlen = GPIO_SIZE + 2;
+	gpio_atom.dlen = GPIO_SIZE + CRC_SIZE;
 	
 	while ((read = getline(&line, &len, fp)) != -1) {
 		linect++;
@@ -466,9 +467,9 @@ int read_dt(char* in) {
 	
 	total_size+=ATOM_SIZE+size;
 	has_dt = true;
-	dt_atom.type = ATOM_DT;
-	dt_atom.count = 2;
-	dt_atom.dlen = size+2;
+	dt_atom.type = ATOM_DT_NUM;
+	dt_atom.count = ATOM_DT_TYPE;
+	dt_atom.dlen = size+CRC_SIZE;
 	
 	dt_atom.data = (char *) malloc(size);
 	if (!fread(dt_atom.data, size, 1, fp)) goto err;
@@ -503,7 +504,7 @@ int main(int argc, char *argv[]) {
 	
 	if (argc>3) {
 		//DT file specified
-		total_size-=(ATOM_SIZE +dt_atom.dlen - 2);
+		total_size-=(ATOM_SIZE +dt_atom.dlen - CRC_SIZE);
 		ret = read_dt(argv[3]);
 		if (ret) {
 			printf("Error reading DT file, aborting\n");
