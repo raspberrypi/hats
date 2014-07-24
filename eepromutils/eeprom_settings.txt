@@ -14,8 +14,8 @@
 ########################################################################
 # Vendor info
 
-# 32 bit product serial number
-product_serial 0x00000000  
+# 128 bit GUID
+product_guid 0x00000000_00000000_00000000_00000000
 
 # 16 bit product id
 product_id 0x0000
