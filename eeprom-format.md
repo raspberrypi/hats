@@ -6,6 +6,10 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
 
 ## EEPROM Structure
 
+Note that the EEPROM data is little endian. 16 bit, 32 bit etc. integers
+are therefore stored with least significant byte first (at the lower
+EEPROM address).
+
 ```
   HEADER  <- EEPROM header (Required)
   ATOM1   <- Vendor info atom (Required)
