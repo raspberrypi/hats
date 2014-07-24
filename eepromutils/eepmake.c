@@ -217,7 +217,7 @@ void parse_command(char* cmd, char* c) {
 				//put in the variant
 				vinf->serial_2 = (vinf->serial_2 & 0x3fffffff) | 0x80000000;
 				
-				printf("UUID=0x%08x_%08x_%08x_%08x\n", vinf->serial_4, vinf->serial_3, vinf->serial_2, vinf->serial_1);
+				printf("UUID=%08x-%04x-%04x-%04x-%04x%08x\n", vinf->serial_4, vinf->serial_3>>16, vinf->serial_3 & 0xffff, vinf->serial_2>>16, vinf->serial_2 & 0xffff, vinf->serial_1);
 			}
  
 		}
