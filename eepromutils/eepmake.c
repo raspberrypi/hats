@@ -103,6 +103,8 @@ int write_binary(char* out) {
 	}
 	
 	for (i = 0; i<custom_ct; i++) {
+		custom_atom[i].count-=!has_dt;
+		
 		current_atom = (char *) malloc(custom_atom[i].dlen+ATOM_SIZE-CRC_SIZE);
 		offset = 0;
 		
@@ -491,8 +493,8 @@ int read_dt(char* in) {
 	
 	total_size+=ATOM_SIZE+size;
 	has_dt = true;
-	dt_atom.type = ATOM_DT_NUM;
-	dt_atom.count = ATOM_DT_TYPE;
+	dt_atom.type = ATOM_DT_TYPE;
+	dt_atom.count = ATOM_DT_NUM;
 	dt_atom.dlen = size+CRC_SIZE;
 	
 	dt_atom.data = (char *) malloc(size);
@@ -509,13 +511,51 @@ err:
 	
 }
 
+int read_custom(char* in) {
+	FILE * fp;
+	unsigned long size = 0;
+	
+	printf("Opening custom data file %s for read\n", in);
+	
+	fp = fopen(in, "r");
+	if (fp == NULL) {
+		printf("Error opening input file\n");
+		return -1;
+	}
+	
+	fseek(fp, 0L, SEEK_END);
+	size = ftell(fp);
+	fseek(fp, 0L, SEEK_SET);
+	
+	printf("Adding %lu bytes of custom data\n", size);
+	
+	total_size+=ATOM_SIZE+size;
+	
+	custom_atom[custom_ct].type = ATOM_CUSTOM_TYPE;
+	custom_atom[custom_ct].count = 3+custom_ct;
+	custom_atom[custom_ct].dlen = size+CRC_SIZE;
+	
+	custom_atom[custom_ct].data = (char *) malloc(size);
+	if (!fread(custom_atom[custom_ct].data, size, 1, fp)) goto err;
+	
+	custom_ct++;
+	
+	fclose(fp);
+	return 0;
+	
+err:
+	printf("Unexpected EOF or error occurred\n");
+	fclose(fp);
+	return 0;
+	
+}
 int main(int argc, char *argv[]) {
 	int ret;
-	int i;
+	int i, custom_o=0;
 	
 	if (argc<3) {
 		printf("Wrong input format.\n");
-		printf("Try 'eepmake input_file output_file [dt_file]'\n");
+		printf("Try 'eepmake input_file output_file [dt_file] [-c custom_file_1 ... custom_file_n]'\n");
 		return 0;
 	}
 	
@@ -527,14 +567,30 @@ int main(int argc, char *argv[]) {
 	}
 	
 	if (argc>3) {
-		//DT file specified
-		total_size-=(ATOM_SIZE +dt_atom.dlen - CRC_SIZE);
-		ret = read_dt(argv[3]);
-		if (ret) {
-			printf("Error reading DT file, aborting\n");
-			return 0;
+		if (strcmp(argv[3], "-c")==0) {
+			custom_o=4;
+		} else {
+			//DT file specified
+			if (dt_atom.dlen) total_size-=(ATOM_SIZE +dt_atom.dlen - CRC_SIZE);
+			ret = read_dt(argv[3]);
+			if (ret) {
+				printf("Error reading DT file, aborting\n");
+				return 0;
+			}
 		}
 	}
+	
+	if (argc>4 && strcmp(argv[4], "-c")==0) custom_o = 5;
+
+	if (custom_o)
+		for (i = custom_o; i<argc; i++) {
+			//new custom data file
+			ret = read_custom(argv[i]);
+			if (ret) {
+				printf("Error reading DT file, aborting\n");
+				return 0;
+			}
+		}
 	
 	header.signature = HEADER_SIGN;
 	header.ver = FORMAT_VERSION;

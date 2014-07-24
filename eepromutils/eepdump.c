@@ -36,16 +36,21 @@ int read_bin(char *in, char *outf) {
 	
 	if (FORMAT_VERSION!=header.ver) fprintf(out, "# WARNING: format version mismatch!!!\n");
 	
-	fprintf(out, "# --Header--\n# signature=0x%08x\n# version=%u\n# reserved=%u\n# numatoms=%u\n# eeplen=%u\n# ----------\n\n\n", header.signature, header.ver, header.res, header.numatoms, header.eeplen);
+	fprintf(out, "# --Header--\n# signature=0x%08x\n# version=0x%04x\n# reserved=%u\n# numatoms=%u\n# eeplen=%u\n# ----------\n\n\n", header.signature, header.ver, header.res, header.numatoms, header.eeplen);
 				
 	
 	for (i = 0; i<header.numatoms; i++) {
-	
+		
 		if (!fread(&atom, ATOM_SIZE-CRC_SIZE, 1, fp)) goto err;
 		
 		printf("Reading atom %d...\n", i);
 		
 		fprintf(out, "# Start of atom #%u of type 0x%04x and length %u\n", atom.count, atom.type, atom.dlen);
+		
+		if (atom.count != i) {
+			printf("Error: atom count mismatch\n");
+			fprintf(out, "# Error: atom count mismatch\n");
+		}
 		
 		unsigned long pos = ftell(fp);
 		char *atom_data = (char *) malloc(atom.dlen + ATOM_SIZE-CRC_SIZE);
