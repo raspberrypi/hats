@@ -179,7 +179,7 @@ int read_bin(char *in, char *outf) {
 		
 		if (calc_crc != crc) {
 			printf("Error: atom CRC16 mismatch\n");
-			fprintf(out, "# Error: atom CRC16 mismatch. Calculated CRC16=0x%02x", crc, calc_crc);
+			fprintf(out, "# Error: atom CRC16 mismatch. Calculated CRC16=0x%02x", crc);
 		} else printf("CRC OK\n");
 		
 		fprintf(out, "\n\n");
@@ -190,9 +190,9 @@ int read_bin(char *in, char *outf) {
 	long pos = ftell(fp);
 	fseek(fp, 0L, SEEK_END);
 	
-	if (pos!=ftell(fp)) printf("Error: Dump finished before EOF\n");
-	if (pos!=header.eeplen) printf("Error: Dump finished before length specified in header\n");
-	if (ftell(fp)!=header.eeplen) printf("Error: EOF does not match length specified in header\n");
+	if (pos!=ftell(fp)) printf("Warning: Dump finished before EOF\n");
+	if (pos!=header.eeplen) printf("Warning: Dump finished before length specified in header\n");
+	if (ftell(fp)!=header.eeplen) printf("Warning: EOF does not match length specified in header\n");
 	
 	printf("Done.\n");
 	
