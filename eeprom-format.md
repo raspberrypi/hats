@@ -56,8 +56,6 @@ accidentally stacks 2 identical HATs on top of eachother - this error case is on
 detectable if the EEPROM data in each is different. The UUID is also useful for 
 manufacturers as a per-board 'serial number'.
 
-Use all zeros for a random UUID that complies with RFC 4122.
-
 ```
   Bytes   Field
   16      uuid        UUID (must be unique for every manufactured board)
