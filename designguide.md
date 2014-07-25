@@ -55,7 +55,7 @@ Details of the EEPROM data format can be found in the [EEPROM format specificati
 
 ## Mechanical Specification
 
-The [following drawing](hat-board-mechanical.pdf) gives the mechanical details for add-on boards which conform to the Raspberry Pi HAT specification.
+The [following drawing](hat-board-mechanical.pdf) gives the mechanical details for add-on boards which conform to the HAT specification.
 
 ## Back Powering the Pi via the J8 GPIO Header
 

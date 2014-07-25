@@ -4,7 +4,7 @@
 
 ## Indroduction
 
-The Raspberry Pi B+ has been designed specifically with add-on boards in mind. For B+ we are introducing 'HATs' (Hardware Attached on Top). A HAT is an add-on board for B+ that conforms to the Raspberry Pi HAT specifications. HATs are not backward compatible with models A and B.
+The Raspberry Pi B+ has been designed specifically with add-on boards in mind. For B+ we are introducing 'HATs' (Hardware Attached on Top). A HAT is an add-on board for B+ that conforms to the HAT specifications. HATs are not backward compatible with models A and B.
 
 There are obviously a lot of add-on boards designed for the original model A and B boards (which interface to the original 26 way GPIO header). The first 26 pins of the B+ GPIO header are identical to those of the original models, so most existing boards will still work.
 
@@ -28,7 +28,7 @@ Note that for new designs that only use the original 26 way GPIO header pins it 
 
 ## B+ HAT requirements
 
-A board can only be called a Raspberry Pi HAT if:
+A board can only be called a HAT if:
 
 1. It conforms to the basic add-on board requirements
 2. It has a valid ID EEPROM (including Vendor info, GPIO map and valid DT blob information).
@@ -50,12 +50,12 @@ There are tools and documentation on how to flash ID EEPROMs [here](./eepromutil
 
 **Q: I want to keep shipping an existing board / ship a new board that only connects to the original 26W GPIO pins.**
 
-This is OK. You can't call it a Raspberry Pi HAT. 
+This is OK. You can't call it a HAT. 
 If the board will back-power the Pi we recommend adding the safety diode as per requirement 2. of the basic add-on board requirements.
 
 **Q: I want to ship a board that attaches to the B+ 40W GPIO header and covers ID_SD and ID_SC but does not include an EEPROM.**
 
-This is OK as long as it meets the basic requirements. You can't call it a Raspberry Pi HAT.
+This is OK as long as it meets the basic requirements. You can't call it a HAT.
 You **must** connect ID_SD to GND (and leave ID_SC unconnected) so that the Pi can detect that a board has been connected.
 
 **Q: I want to ship a board that has an ID EEPROM but does not conform to the remaining HAT specs.**
