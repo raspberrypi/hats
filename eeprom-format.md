@@ -10,7 +10,7 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
   HEADER  <- EEPROM header (Required)
   ATOM1   <- Vendor info atom (Required)
   ATOM2   <- GPIO map atom (Required)
-  ATOM3   <- DT blob atom (Recommended)
+  ATOM3   <- DT blob atom (Required compliance with the HAT specification)
   ...
   ATOMn
 ```
@@ -52,7 +52,7 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
 
 Note that the UUID is mandatory and must be filled in correctly according to RFC 4122
 (every HAT can then be uniquely identified). It protects agains the case where a user 
-accidentally stacks 2 identical HATs on top of eachother - this error case is only 
+accidentally stacks 2 identical HATs on top of each other - this error case is only 
 detectable if the EEPROM data in each is different. The UUID is also useful for 
 manufacturers as a per-board 'serial number'.
 
