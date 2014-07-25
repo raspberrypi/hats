@@ -1,83 +1,71 @@
-# B+ HAT DESIGN GUIDE
+# B+ add-on boards and HATs
 
-**NOTE THIS INFORMATION IS CURRENTLY STILL CHANGING**
+**NOTE** All references to GPIO numbers within this document are referring to the BCM2835 GPIOs (**NOT** pin numbers on the Pi GPIO header).
 
-## Introduction
+## Indroduction
 
-The Raspberry Pi B+ has been designed specifically with add-on boards - we're calling them Raspberry Pi HATs (Hardware Attached on Top) - in mind. This guide contains both recommendations and also **requirements** that must be followed when designing a HAT for the B+.
+The Raspberry Pi B+ has been designed specifically with add-on boards in mind. For B+ we are introducing 'HATs' (Hardware Attached on Top). A HAT is an add-on board for B+ that conforms to the Raspberry Pi HAT specifications. HATs are not backward compatible with models A and B.
 
-**If you are thinking about or are designing an add-on board for the Raspberry Pi B+ please read and follow this design guide carefully and make sure the requirements are met. There aren't too many hard requirements, and they shouldn't be too difficult to design for or to follow.**
+There are obviously a lot of add-on boards designed for the original model A and B boards (which interface to the original 26 way GPIO header). The first 26 pins of the B+ GPIO header are identical to those of the original models, so most existing boards will still work.
 
-While we cannot force anyone to follow this guide, any boards which break the rules (and therefore may cause incompatibility or issues for end users) will not be looked on very favourably.
+As well as now being a 40W GPIO header (originals on B and A are 26W) the biggest change with B+ add-on boards versus older boards designed for models A and B is that the B+'s header has 2 special pins (ID_SC and ID_SD) that are reserved exclusively for attaching an 'ID EEPROM'. This ID EEPROM contains data that identifies the board, tells the B+ how the GPIOs need to be set up and what hardware is on the board. This allows the add-on board to be automatically identified and set up by the Pi software at boot time including loading all the necessary drivers.
+
+While we cannot force anyone to follow our minimum requirements or HAT specification, doing so will make users lives easier, safer, and will make us more likeley to recommend a product. Likewise if one of the minimum requirements is ignored we are unlikeley to look on a product very favourably.
 
 So why are we bothering with all this? Basically we want to ensure consistency and compatibility with future add-on boards, and to allow a much better end-user experience, especially for the less technically aware users.
 
 Finally if you have any questions please head over to the [forums](http://www.raspberrypi.org/forums/viewforum.php?f=100) to ask them.
 
-## Using GPIO Pins
+## New add-on boards basic requirements
 
-**NOTE** All references to GPIO numbers within this document are referring to the BCM2835 GPIOs (**NOT** pin numbers on the J8 GPIO header).
+If you are designing a new add-on board that takes advantage of the pins on the B+ GPIO header **other than the original 26** then you **must** follow the basic requirements:
 
-### Power-on State
+1. The header must cover the ID_SD and ID_SC pins and either a valid ID EEPROM must be used on these pins OR the ID_SD pin must be shorted to GND (so the Pi can detect at least that a board is plugged in) and the ID_SC pin must be left unconnected. **Do not use ID_SC and ID_SD pins for anything except an ID_EEPROM or shorting ID_SD to GND on non-EEPROM boards.**
+2. If back-powering via the 5V GPIO header pins you must make sure that it is safe to do so even if the Pi 5V supply is also connected. Adding an ideal 'safety' diode identical to the one on B+ as per the relevant section of the [design guide](designguide.md) is the recommended way to do this.
+3. The board must protect against old firmware accidentally driving GPIO6,14,16 at boot time if any of those pins are also driven by the board itself.
 
-In the new B+ firmware after power-on the bank 0 GPIOs on GPIO header J8 (except ID_SD and ID_SC which are GPIO0 and 1 respectiveley) will be inputs with either a pull up or pull down. The default pull state can be found in the [BCM2835 peripherals specificaion](http://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf) section 6.2 table 6-31 (see the "Pull" column).
+Note that for new designs that only use the original 26 way GPIO header pins it is still recommended to follow requirement 2. if the board supports back-powering a Pi.
 
-### Notes and Recommendations
+## B+ HAT requirements
 
-GPIO pins ID_SC and ID_SD (GPIO0 and GPIO1) are reserved for use solely for board identification. **An I2C EEPROM plus pull-up resistors should be the only connections to these pins.**
+A board can only be called a Raspberry Pi HAT if:
 
-Raspberry Pi models A and B use some bank 0 GPIOs for board control functions and UART output:
+1. It conforms to the basic add-on board requirements
+2. It has a valid ID EEPROM (including Vendor info, GPIO map and valid DT blob information).
+3. It has a full size 40W GPIO connector.
+4. It follows the HAT [mechanical spcification](hat-board-mechanical.pdf)
+5. It uses a GPIO connector that spaces the HAT between 10mm and 12mm from the Pi (i.e. uses spacers between 10mm and 12mm).
+6. It protects against old firmware accidentally driving GPIO6,14,16 at boot time if any of those pins are also driven by the HAT.
 
-    GPIO6 -> LAN_RUN
-    GPIO14 -> UART_TX
-    GPIO16 -> STATUS_LED
+Of course users are free to put an ID EEPROM on boards that don't otherwise conform to the remainder of the specifications - in fact we strongly encourage this; we just want things called HATs to also be somewhat of a known quantity mechanically.
 
-**If a user boots a B+ with legacy firmware these pins may get driven so it is recommended to avoid driving these from a HAT, or use a current limiting resistor if that is not possible. Note also that relying on the pull state of these pins during boot is not advisable.** 
+## Design Resources
 
-It is also strongly recommended to ship a clear warning notice with your HAT that updated firmware must be used, and clear instructions for how to update the firmware on the Pi before plugging in the HAT.
+Before designing any new add-on board or HAT please read the [design guide](designguide.md) carefully.
 
-## ID EEPROM
+For what to flash into the ID EEPROM see the [ID EEPROM data format spec](eeprom-format.md).
 
-Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0/SCL and GPIO1/SDA) **are reserved solely for attaching an I2C 'ID' EEPROM, do not connect anything else to these pins**.
+There are tools and documentation on how to flash ID EEPROMs [here](./eepromutils).
 
-The ID EEPROM is interrogated at boot time and provides the Pi with the required GPIO setup (pin settings and functions) for the HAT as well as a binary Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards. Note that the device tree fragment is optional but strongly recommended. (NB docs for how to create this are on their way...)
+## FAQ
 
-Pull-ups must be provided on the top board for ID_SC and ID_SD  (SCL and SDA respectively) to 3V3. The required pull-up value is 3.9K.
+### Q I want to keep shipping an existing board / ship a new board that only connects to the original 26W GPIO pins.
+This is OK. You can't call it a Raspberry Pi HAT. 
+If the board will back-power the Pi we recommend adding the safety diode as per requirement 2. of the basic add-on board requirements although this is not mandatory.
 
-**EEPROM Device Specification**
+### Q I want to ship a board that attaches to the B+ 40W GPIO header and covers ID_SD and ID_SC but does not include an EEPROM.
+This is OK as long as it meets the basic requirements. You can't call it a Raspberry Pi HAT.
+You **must** connect ID_SD to GND (and leave ID_SC unconnected) so that the Pi can detect that a board has been connected.
 
-- 24Cxx type 3.3V I2C EEPROM must be used (some types are 5V only, do not use these).
-- The EEPROM must be of the **16-bit** addressable type (**do not use ones with 8-bit addressing**)
-- Do not use 'paged' type EEPROMs where the I2C lower address bit(s) select the EEPROM page.
-- Only required to support 100kHz I2C mode.
-- Devices that perform I2C clock stretching are not supported.
-- Write protect pin must be supported and protect the entire device memory.
+### Q I want to ship a board that has an ID EEPROM but does not conform to the remaining HAT specs.
+This is OK as long as it also meets the basic requirements. You can't call it a HAT but you **can** say it supports GPIO autoconfiguration.
 
-Note that due to the restrictions above (only using non-paged 16-bit addressable devices is allowed), many of the smaller I2C EEPROMs are ruled out - please check datasheets carefully when choosing a suitable EEPROM for your HAT.
+### Q I want to ship a HAT but the software for creating the EEPROM and/or DT blob isn't ready yet.
+In this case please ship your board with either a blank EEPROM or one with just the vendor info and GPIO map programmed. Use a 32kbit or larger EEPROM which should be ample for re-flashing later with an image containing a DT blob. You will need to add some ability for a user to un-write-protect the EEPROM to (re-)flash it themselves later such as suggested in the [design guide](designguide.md). Please provide instructions on your website for how to reflash the board when an image becomes available.
 
-A recommended part that satisfies the above constraints is OnSemi CAT24C32 which is a 32kbit device. The minimum EEPROM size required is variable and depends on the size of the vendor data strings in the EEPROM and whether a device tree data blob is included (and its size) and whether any other vendor specific data is included.
+### Q I'm using the HAT mechanical spec but don't want to / can't add the cutout / slot for the display / camera flex.
+This is OK and the board still conforms to the HAT specification. Some HATs will not be able to support the slot/cutout based on where the connectors and components must be placed (but it is recommended to support them if at all possible).
 
-It is recommended that EEPROM WP (write protect) pin be connected to a test point on the board and pulled up to 3V3 with a 1K resistor. The idea is that at board test/probe the EEPROM can be written (WP pin can be driven LOW), but there is no danger of a user accidentally changing the device contents once the board leaves the factory. Note that the recommended device has an internal pull down hence the stiff (1K) pull up is required. Note that on some devices WP does not write protect the entire array (e.g. some Microchip variants) – avoid using these.
-It may be desirable for a HAT to have the ability for its EEPROM to be reflashed by an end user, in this case it is recommended to also include a user settable jumper (or dip switch) to short WP to GND and make the EEPROM writable once more. At least this way a user has to perform a specific action to make the EEPROM writeable again before being able to re-flash it and a suitable warning process can be put in place to make sure the correct image is used.
-
-Address pins where present on a device should be set to zero. (NB reduced pin count variants of the recommended device – e.g. SOT23-5 package - usually have A[2:0] set to 0 anyway).
-
-Details of the EEPROM data format can be found in the [EEPROM format specification](eeprom-format.md). [Software tools](./eepromutils) are available for creation of valid EEPROM images, to flash an image or read and dump and image to/from an attached HAT EEPROM.
-
-[The following schematic fragment](eeprom-circuit.png) is an example of connecting an EEPROM  including a jumper and probe point to disable write protect.
-
-## Mechanical Specification
-
-The [following drawing](hat-board-mechanical.pdf) gives mechanical detials of HATs intended to fit over the 4 mounting holes (56x65mm size boards).
-
-## Back Powering the Pi via the J8 GPIO Header
-
-It is possible to power the Pi by supplying 5V through the GPIO header (J8) pins 2,4 and GND. The acceptable input voltage range is 5V ±5%.
-
-On the Pi, the 5V GPIO header pins connect to the 5V net after the micro-USB input, polyfuse and input 'ideal' safety diode (made up of the PFET and matched PNP transistors). The 'safety' diode stops any appreciable current flowing back out of the 5V micro USB should the 5V net on the board be at a higher voltage than the 5V micro USB input.
-
-If the Pi is going to be back-powered via the 5V GPIO header pins it is **strongly recommended** to implement a duplicate power safety diode before the HAT 5V net (which then feeds power back through the 5V GPIO pins).
-
-Implementing the back-powering this way makes it safe to provide power to the Pi from the HAT board but also have the Pi 5V power supply attached. (Though it is still not recommended to attach both).
-
-**Under no circumstances should a power source be connected to the J8 3.3V pins.**
+### Q I want to create a board that connects to the B+ 'RUN' header.
+No problem but you can't call it a HAT.
+HATs are designed to be easy to use and a known quantity. Using the RUN pin requires a user to solder a header onto the Pi hence this is not something we wish to include in the HAT spec.
