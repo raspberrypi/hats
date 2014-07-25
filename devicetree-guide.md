@@ -2,7 +2,7 @@
 
 ###**This section is under active development and portions of the guide rely on software features not yet implemented.**
 ---
-Within the HAT specification is the (recommended) option to include a data atom that contains a devicetree overlay  binary (.dtbo).
+Within the HAT specification is the requirement to include a data atom that contains a devicetree overlay binary (.dtbo).
 
 First, read and understand what a device tree is and how it is used by system software (i.e. Linux).
 
