@@ -5,15 +5,15 @@ TYPE="NOT_SET"
 
 function usage()
 {
-    echo "eepflash:  Writes or reads .eep binary image to/from HAT EEPROM on a Raspberry Pi"
-    echo ""
-    echo "./eepflash.sh"
-    echo "	-h --help: display this help message"
-    echo "	-r -read: read .eep from the eeprom"
-    echo "	-w -write: write .eep to the eeprom"
+	echo "eepflash:  Writes or reads .eep binary image to/from HAT EEPROM on a Raspberry Pi"
+	echo ""
+	echo "./eepflash.sh"
+	echo "	-h --help: display this help message"
+	echo "	-r -read: read .eep from the eeprom"
+	echo "	-w -write: write .eep to the eeprom"
 	echo "	-f=file_name: binary .eep file to read to/from"
 	echo "	-t=eeprom_type: eeprom type to use"
-    echo ""
+	echo ""
 }
 
 if [ "$(id -u)" != "0" ]; then
@@ -24,28 +24,28 @@ fi
 while [ "$1" != "" ]; do
     PARAM=`echo $1 | awk -F= '{print $1}'`
     VALUE=`echo $1 | awk -F= '{print $2}'`
-    case $PARAM in
-        -h | --help)
-            usage
-            exit
-            ;;
-        -r | -read)
-            MODE="read"
-            ;;
-        -w | -write)
+	case $PARAM in
+		-h | --help)
+			usage
+			exit
+			;;
+		-r | -read)
+			MODE="read"
+			;;
+		-w | -write)
 			MODE="write"
-            ;;
+			;;
 		-t | -type)
-            TYPE=$VALUE
-            ;;
+			TYPE=$VALUE
+			;;
 		-f | -file)
-            FILE=$VALUE
-            ;;
-        *)
-            echo "ERROR: unknown parameter \"$PARAM\""
-            usage
-            exit 1
-            ;;
+			FILE=$VALUE
+			;;
+		*)
+			echo "ERROR: unknown parameter \"$PARAM\""
+			usage
+			exit 1
+			;;
     esac
     shift
 done
@@ -70,15 +70,16 @@ fi
 
 
 echo "This will disable the camera so you will need to REBOOT after this process completes."
+echo "This will attempt to write to i2c address 0x50. Make sure there is an eeprom at this address."
 echo "This script comes with ABSOLUTELY no warranty. Continue only if you know what you are doing."
 
 while true; do
-    read -p "Do you wish to continue? (yes/no): " yn
-    case $yn in
-        yes | Yes ) break;;
-        no | No ) exit;;
-        * ) echo "Please type yes or no.";;
-    esac
+	read -p "Do you wish to continue? (yes/no): " yn
+	case $yn in
+		yes | Yes ) break;;
+		no | No ) exit;;
+		* ) echo "Please type yes or no.";;
+	esac
 done
 
 modprobe i2c-bcm2708
