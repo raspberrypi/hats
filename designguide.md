@@ -2,15 +2,15 @@
 
 **NOTE THIS INFORMATION IS CURRENTLY STILL CHANGING**
 
-## Using GPIO Pins
+## GPIO Pins
 
 **NOTE** All references to GPIO numbers within this document are referring to the BCM2835 GPIOs (**NOT** pin numbers on the J8 GPIO header).
 
-### Power-on State
+### GPIO Power-on State
 
 In the new B+ firmware after power-on the bank 0 GPIOs on 40W GPIO header J8 (except ID_SD and ID_SC which are GPIO0 and 1 respectiveley) will be inputs with either a pull up or pull down. The default pull state can be found in the [BCM2835 peripherals specificaion](http://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf) section 6.2 table 6-31 (see the "Pull" column).
 
-### Notes and Recommendations
+### GPIO Requirements
 
 GPIO pins ID_SC and ID_SD (GPIO0 and GPIO1) are reserved for use solely for board detection / identification. **The only allowed connections to the ID_ pins are either an ID EEPROM plus pull up resistors OR ID_SD shorted to GND and ID_SC left unconnected (for boards without an EEPROM). Do not connect anything else to these pins!**
 
@@ -28,7 +28,7 @@ Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0/S
 
 The ID EEPROM is interrogated at boot time and provides the Pi with the vendor information, the required GPIO setup (pin settings and functions) for the board as well as a binary Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards (probably via a sysfs interface but this is TBD).
 
-Pull-ups must be provided on the top board for ID_SC and ID_SD (SCL and SDA respectively) to 3V3. The required pull-up value is 3.9K.
+Pull-ups must be provided on the top board for ID_SC and ID_SD (SCL and SDA respectively) to 3V3 if using an EEPROM. The required pull-up value is 3.9K.
 
 **EEPROM Device Specification**
 
