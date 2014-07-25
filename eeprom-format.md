@@ -92,3 +92,5 @@ manufacturers as a per-board 'serial number'.
 ### Device tree atom data (type=0x0003):
 
 Binary data (DT blob fragment for board hardware).
+
+For more information on the Devicetree atom contents, see the [Devicetree Guide](devicetree-guide.md).
