@@ -2,9 +2,7 @@
 MODE="NOT_SET"
 FILE="NOT_SET"
 TYPE="NOT_SET"
-ENVIRONMENT="dev"
-DB_PATH="/data/db"
- 
+
 function usage()
 {
     echo "eepflash:  Writes or reads .eep binary image to/from HAT EEPROM on a Raspberry Pi"
@@ -63,9 +61,7 @@ elif [ $TYPE == "NOT_SET" ]; then
 	exit 1
 fi
 
-echo "MODE is $MODE";
-echo "FILE is $FILE";
-echo "TYPE is $TYPE";
+
 rc=$?
 if [ $rc != 0 ]; then
 	echo "You need to be root"
@@ -99,7 +95,7 @@ if [ $rc != 0 ]; then
 fi
 
 if [ ! -d "/sys/class/gpio/gpio28" ]; then
-	echo 28 > /sys/class/gpio/export | $DB_PATH
+	echo 28 > /sys/class/gpio/export
 fi
 
 if [ ! -d "/sys/class/gpio/gpio29" ]; then
@@ -112,7 +108,6 @@ echo in > /sys/class/gpio/gpio29/direction
 if [ ! -d "/sys/class/i2c-adapter/i2c-0/0-0050" ]; then
 	echo "$TYPE 0x50" > /sys/class/i2c-adapter/i2c-0/new_device
 fi
-
 
 
 if [ "$MODE" = "write" ]
