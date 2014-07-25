@@ -49,22 +49,28 @@ There are tools and documentation on how to flash ID EEPROMs [here](./eepromutil
 ## FAQ
 
 **Q: I want to keep shipping an existing board / ship a new board that only connects to the original 26W GPIO pins.**
+
 This is OK. You can't call it a Raspberry Pi HAT. 
 If the board will back-power the Pi we recommend adding the safety diode as per requirement 2. of the basic add-on board requirements.
 
 **Q: I want to ship a board that attaches to the B+ 40W GPIO header and covers ID_SD and ID_SC but does not include an EEPROM.**
+
 This is OK as long as it meets the basic requirements. You can't call it a Raspberry Pi HAT.
 You **must** connect ID_SD to GND (and leave ID_SC unconnected) so that the Pi can detect that a board has been connected.
 
 **Q: I want to ship a board that has an ID EEPROM but does not conform to the remaining HAT specs.**
+
 This is OK as long as it also meets the basic requirements. You can't call it a HAT but you **can** say it supports GPIO autoconfiguration if the EEPROM contains valid vendor, GPIO map and DT blob information.
 
 **Q: I want to ship a HAT but the software for creating the EEPROM and/or DT blob isn't ready yet.**
+
 In this case please ship your board with either a blank EEPROM or one with just the vendor info and GPIO map programmed. Use a 32kbit or larger EEPROM which should be ample for re-flashing later with an image containing a DT blob. You will need to add some ability for a user to un-write-protect the EEPROM to (re-)flash it themselves later such as suggested in the [design guide](designguide.md). Please provide instructions on your website for how to reflash the board when an image becomes available.
 
 **Q: I'm using the HAT mechanical spec but don't want to / can't add the cutout / slot for the display / camera flex.**
+
 This is OK and the board still conforms to the HAT specification. Some HATs will not be able to support the slot/cutout based on where the connectors and components must be placed (but it is recommended to support them if at all possible).
 
 **Q: I want to create a board that connects to the B+ 'RUN' header.**
+
 No problem but you can't call it a HAT.
 HATs are designed to be easy to use and a known quantity. Using the RUN pin requires a user to solder a header onto the Pi hence this is not something we wish to include in the HAT spec.
