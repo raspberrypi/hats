@@ -10,7 +10,7 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
   HEADER  <- EEPROM header (Required)
   ATOM1   <- Vendor info atom (Required)
   ATOM2   <- GPIO map atom (Required)
-  ATOM3   <- DT blob atom (Required compliance with the HAT specification)
+  ATOM3   <- DT blob atom (Required for compliance with the HAT specification)
   ...
   ATOMn
 ```
