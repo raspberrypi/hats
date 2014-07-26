@@ -10,7 +10,7 @@ There are obviously a lot of add-on boards designed for the original model A and
 
 As well as now being a 40W GPIO header (originals on B and A are 26W) the biggest change with B+ add-on boards versus older boards designed for models A and B is that the B+'s header has 2 special pins (ID_SC and ID_SD) that are reserved exclusively for attaching an 'ID EEPROM' (or for a simple board detect function if no EEPROM is used). The ID EEPROM contains data that identifies the board, tells the B+ how the GPIOs need to be set up and what hardware is on the board. This allows the add-on board to be automatically identified and set up by the Pi software at boot time including loading all the necessary drivers.
 
-While we cannot force anyone to follow our minimum requirements or HAT specification, doing so will make users lives easier, safer, and will make us more likeley to recommend a product. Likewise if one of the minimum requirements is ignored we are unlikeley to look on a product very favourably.
+While we cannot force anyone to follow our minimum requirements or HAT specification, doing so will make users lives easier, safer, and will make us more likeley to recommend a product. Likewise if one of the minimum requirements is ignored we are unlikely to look on a product very favourably.
 
 So why are we bothering with all this? Basically we want to ensure consistency and compatibility with future add-on boards, and to allow a much better end-user experience, especially for the less technically aware users.
 
