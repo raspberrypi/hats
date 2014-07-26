@@ -1,11 +1,12 @@
 Utilities to create, flash and dump HAT EEPROM images.
 
-COMING SOON!
+Edit eeprom_setting.txt for your particular board and run through
+eepmake tool, then use eepflash tool to write to attached HAT ID EEPROM
 
-Tools will be appearing very shortly - in the meantime if people want
-to ship boards, please use a blank EEPROM but make sure it can be un-
-write protected by a user (e.g. via a board jumper) so that it can be
-flashed in future once this stuff is all working.
+Tools available:
 
-Follow the ID EEPROM section in the HAT design guide and we recommend a
-32kbit EEPROM which should be ample for future images.
+ eepmake: Parses EEPROM text file and creates binary .eep file
+
+ eepdump: Dumps a binary .eep file as human readable text (for debug)
+
+ eepflash: Write or read .eep binary image to/from HAT EEPROM
