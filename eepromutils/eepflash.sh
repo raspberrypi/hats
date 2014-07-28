@@ -74,14 +74,6 @@ elif [ $TYPE == "NOT_SET" ]; then
 	exit 1
 fi
 
-
-rc=$?
-if [ $rc != 0 ]; then
-	echo "You need to be root"
-	exit $rc
-fi
-
-
 echo "This will disable the camera so you will need to REBOOT after this process completes."
 echo "This will attempt to write to i2c address 0x50. Make sure there is an eeprom at this address."
 echo "This script comes with ABSOLUTELY no warranty. Continue only if you know what you are doing."
@@ -128,10 +120,12 @@ if [ "$MODE" = "write" ]
  then
 	echo "Writing..."
 	dd if=$FILE of=/sys/class/i2c-adapter/i2c-0/0-0050/eeprom
+	rc=$?
 elif [ "$MODE" = "read" ]
  then
 	echo "Reading..."
 	dd if=/sys/class/i2c-adapter/i2c-0/0-0050/eeprom of=$FILE
+	rc=$?
 fi
 
 if [ $rc != 0 ]; then
