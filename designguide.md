@@ -63,7 +63,7 @@ It is recommended that EEPROM WP (write protect) pin be connected to a test poin
 
 It may be desirable for a board to have the ability for its EEPROM to be reflashed by an end user, in this case it is recommended to also include a user settable jumper, dip switch or other relatively simple method to short WP to GND and make the EEPROM writable once more. At least this way a user has to perform a specific action to make the EEPROM writeable again before being able to re-flash it and a suitable warning process can be put in place to make sure the correct image is used.
 
-Address pins where present on a device should be set to zero. (NB reduced pin count variants of the recommended device – e.g. SOT23-5 package - usually have A[2:0] set to 0 anyway).
+Address pins where present on a device should be set to make sure the EEPROM I2C address is 0x50. This usually means tying them all to zero. (NB reduced pin count variants of the recommended device – e.g. SOT23-5 package - usually have A[2:0] set to 0 anyway).
 
 Details of the EEPROM data format can be found in the [EEPROM format specification](eeprom-format.md). [Software tools](./eepromutils) are available for creation of valid EEPROM images, to flash an image or read and dump and image to/from an attached ID EEPROM.
 
@@ -79,6 +79,8 @@ It is possible to power the Pi by supplying 5V through the GPIO header pins 2,4 
 
 On the B+ Pi, the 5V GPIO header pins connect to the 5V net after the micro-USB input, polyfuse and input 'ideal' safety diode (made up of the PFET and matched PNP transistors). The 'safety' diode stops any appreciable current flowing back out of the 5V micro USB should the 5V net on the board be at a higher voltage than the 5V micro USB input.
 
-If the add-on board uses any more GPIO connector pins than the first 26 (i.e. is designed for a B+) and provides back-powering via the 5V GPIO header pins it is required to implement a duplicate power safety diode before the HAT 5V net (which then feeds power back through the 5V GPIO pins). OR alternatively provide some other mechanism to guarantee that it is safe if both the Pi PSU and add-on board PSU are connected. It is still recommended to add this circuitry for new board designs that only implement the first 26 pins of the GPIO header but that also implement back powering.
+If the add-on board uses any more GPIO connector pins than the first 26 (i.e. is designed for a B+) and provides back-powering via the 5V GPIO header pins it is required to:
+1. Implement a duplicate power safety diode before the HAT 5V net (which then feeds power back through the 5V GPIO pins). OR alternatively provide some other mechanism to guarantee that it is safe if both the Pi PSU and add-on board PSU are connected. It is still recommended to add this circuitry for new board designs that only implement the first 26 pins of the GPIO header but that also implement back powering.
+2. Make sure that the supply that does the back-powering can supply 5V at a minimum of 1.3A to the Pi at all times (but recommended to support 2A).
 
 **Under no circumstances should a power source be connected to the J8 3.3V pins.**

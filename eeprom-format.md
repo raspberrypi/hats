@@ -51,14 +51,14 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
 ### Vendor info atom data (type=0x0001):
 
 Note that the UUID is mandatory and must be filled in correctly according to RFC 4122
-(every HAT can then be uniquely identified). It protects agains the case where a user 
+(every HAT can then be uniquely identified). It protects against the case where a user 
 accidentally stacks 2 identical HATs on top of each other - this error case is only 
 detectable if the EEPROM data in each is different. The UUID is also useful for 
 manufacturers as a per-board 'serial number'.
 
 ```
   Bytes   Field
-  16      uuid        UUID (must be unique for every manufactured board)
+  16      uuid        UUID (unique for every single board ever made)
   2       pid         product ID
   2       pver        product version
   1       vslen       vendor string length (bytes)
@@ -80,7 +80,13 @@ manufacturers as a per-board 'serial number'.
             [3:0] drive       0=leave at default, 1-8=drive*2mA, 9-15=reserved
             [5:4] slew        0=leave at default, 1=slew rate limiting, 2=no slew limiting, 3=reserved
             [7:6] hysteresis  0=leave at default, 1=hysteresis disabled, 2=hysteresis enabled, 3=reserved
-  1       reserved    set to 0
+  1       power
+            [1:0] back_power  0=board does not back power Pi
+                              1=board back powers and can supply up to 1.3A to the Pi
+                              2=board back powers and can supply up to 2A to the Pi
+                              3=reserved
+                              If back_power=2 high current USB mode is automatically enabled.
+            [7:2] reserved    set to 0
   28      1 byte per IO pin
             Bits in each byte:
             [2:0] func_sel    GPIO function as per FSEL GPIO register field in BCM2835 datasheet

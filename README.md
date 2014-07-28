@@ -31,16 +31,17 @@ Note that for new designs that only use the original 26 way GPIO header pins it 
 A board can only be called a HAT if:
 
 1. It conforms to the basic add-on board requirements
-2. It has a valid ID EEPROM (including Vendor info, GPIO map and valid DT blob information).
+2. It has a valid ID EEPROM (including vendor info, GPIO map and valid device tree information).
 3. It has a full size 40W GPIO connector.
 4. It follows the HAT [mechanical spcification](hat-board-mechanical.pdf)
 5. It uses a GPIO connector that spaces the HAT between 10mm and 12mm from the Pi (i.e. uses spacers between 10mm and 12mm).
+6. If back powering via the GPIO connector the HAT must be able to supply a minimum of 1.3A continuously to the Pi (but ability to supply 2A continuously recommended).
 
 Of course users are free to put an ID EEPROM on boards that don't otherwise conform to the remainder of the specifications - in fact we strongly encourage this; we just want things called HATs to be a known and well-specified entity to make life easier for customers, particularly the less technical ones.
 
 ## Design Resources
 
-Before designing any new add-on board or HAT please read the [design guide](designguide.md) carefully.
+Before designing any new add-on board (HAT compliant or not) please read the [design guide](designguide.md) carefully.
 
 For what to flash into the ID EEPROM see the [ID EEPROM data format spec](eeprom-format.md).
 
