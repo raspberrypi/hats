@@ -16,7 +16,11 @@ The purpose of this overlay is that it allows true automatic configuration of al
 
 The devicetree overlay will be of particular use to add-on board designers making use of the I2C-1, SPI and I2S buses that require chip selects / addresses to be specified in order to be probed and set up correctly by the respective Linux device driver, but it will also allow simple devices such as LEDs and buttons to be recognised by Linux and connected up to e.g. the kernel input events subsystem.
 
-Note: Devices requiring the use of interfaces that need modification of the B+ GPIO header pin states from the default state (Input with default pull) must add a pinctrl pin configuration node that signals to the Linux Pinctrl driver the required configuration. This is **distinct and separate** from Videocore GPIOMAN configuration, as GPIOMAN config is designed for very early setup of all GPIOs prior to booting Linux, which then has notional control over the setup of the Bank 0 GPIO pins.
+### Pinctrl nodes vs GPIO map
+
+Within the devicetree fragment is scope for adding pinctrl nodes that alter the setup of GPIO pins. The timing or sequencing used by pinctrl for GPIO setup may be non-trivial: for example a GPIO could be nominated as a reset pin for an external MCU that may require a reset pulse of a certain length, or a GPIO could be nominated to enable an external power chain that requires a certain period of stabilisation before attempting to talk to any attached devices. The Linux Pinctrl subsystem is designed to cater for complex requirements such as these.
+
+The GPIO pin data map in the EEPROM is **still required** even if pinctrl configuration nodes are specified in the device tree blob. The GPIO map is parsed by the Videocore bootloader prior to ARM boot and **not** Linux.
 
 
 TODO: Add detail for DTC compiler usage, overlay functionality.
