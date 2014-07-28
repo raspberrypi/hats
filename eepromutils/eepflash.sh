@@ -5,14 +5,21 @@ TYPE="NOT_SET"
 
 function usage()
 {
-	echo "eepflash:  Writes or reads .eep binary image to/from HAT EEPROM on a Raspberry Pi"
+	echo "eepflash: Writes or reads .eep binary image to/from HAT EEPROM on a Raspberry Pi"
 	echo ""
 	echo "./eepflash.sh"
 	echo "	-h --help: display this help message"
-	echo "	-r -read: read .eep from the eeprom"
-	echo "	-w -write: write .eep to the eeprom"
-	echo "	-f=file_name: binary .eep file to read to/from"
-	echo "	-t=eeprom_type: eeprom type to use"
+	echo "	-r --read: read .eep from the eeprom"
+	echo "	-w --write: write .eep to the eeprom"
+	echo "	-f=file_name --file=file_name: binary .eep file to read to/from"
+	echo "	-t=eeprom_type --type=eeprom_type: eeprom type to use"
+	echo "		We support the following eeprom types:"
+	echo "		-24c32"
+	echo "		-24c64"
+	echo "		-24c128"
+	echo "		-24c256"
+	echo "		-24c512"
+	echo "		-24c1024"
 	echo ""
 }
 
@@ -29,16 +36,22 @@ while [ "$1" != "" ]; do
 			usage
 			exit
 			;;
-		-r | -read)
+		-r | --read)
 			MODE="read"
 			;;
-		-w | -write)
+		-w | --write)
 			MODE="write"
 			;;
-		-t | -type)
-			TYPE=$VALUE
+		-t | --type)
+			if [ $VALUE == "24c32" ] || [ $VALUE == "24c64" ] || [ $VALUE == "24c128" ] ||
+				[ $VALUE == "24c256" ] || [ $VALUE == "24c512" ] || [ $VALUE == "24c1024" ]; then
+					TYPE=$VALUE
+			else
+				echo "ERROR: Unrecognised eeprom type. Try -h for help"
+				exit 1
+			fi
 			;;
-		-f | -file)
+		-f | --file)
 			FILE=$VALUE
 			;;
 		*)
