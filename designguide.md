@@ -28,7 +28,7 @@ Note: For newer firmware, a config.txt option exists to enable the UART on GPIO1
 
 ### GPIO Requirements
 
-GPIO pins ID_SC and ID_SD (GPIO0 and GPIO1) are reserved for use solely for board detection / identification. **The only allowed connections to the ID_ pins are either an ID EEPROM plus pull up resistors OR ID_SD shorted to GND and ID_SC left unconnected (for boards without an EEPROM). Do not connect anything else to these pins!**
+GPIO pins ID_SC and ID_SD (GPIO0 and GPIO1) are reserved for use solely for board detection / identification. **The only allowed connections to the ID_ pins are an ID EEPROM plus 3.9K pull up resistors. Do not connect anything else to these pins!**
 
 Raspberry Pi models A and B use some bank 0 GPIOs for board control functions and UART output:
 
@@ -40,7 +40,7 @@ Raspberry Pi models A and B use some bank 0 GPIOs for board control functions an
 
 ## ID EEPROM
 
-Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0/SCL and GPIO1/SDA) are reserved for board detection / identification. **The only allowed connections to the ID_ pins are either an ID EEPROM plus pull up resistors; OR ID_SD shorted to GND and ID_SC left unconnected (for boards without an EEPROM). Do not connect anything else to these pins!**
+Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0/SCL and GPIO1/SDA) are reserved for board detection / identification. **The only allowed connections to the ID_ pins are an ID EEPROM plus 3.9K pull up resistors. Do not connect anything else to these pins!**
 
 The ID EEPROM is interrogated at boot time and provides the Pi with the vendor information, the required GPIO setup (pin settings and functions) for the board as well as a binary Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards (probably via a sysfs interface but this is TBD).
 
@@ -61,7 +61,7 @@ A recommended part that satisfies the above constraints is OnSemi CAT24C32 which
 
 It is recommended that EEPROM WP (write protect) pin be connected to a test point on the board and pulled up to 3V3 with a 1K resistor. The idea is that at board test/probe the EEPROM can be written (WP pin can be driven LOW), but there is no danger of a user accidentally changing the device contents once the board leaves the factory. Note that the recommended device has an internal pull down hence the stiff (1K) pull up is required. Note that on some devices WP does not write protect the entire array (e.g. some Microchip variants) – avoid using these.
 
-It may be desirable for a board to have the ability for its EEPROM to be reflashed by an end user, in this case it is recommended to also include a user settable jumper, dip switch or other relatively simple method to short WP to GND and make the EEPROM writable once more. At least this way a user has to perform a specific action to make the EEPROM writeable again before being able to re-flash it and a suitable warning process can be put in place to make sure the correct image is used.
+It may be desirable for a board to have the ability for its EEPROM to be reflashed by an end user, in this case it is recommended to also include a user settable jumper to short WP to GND and make the EEPROM writable once more. At least this way a user has to perform a specific action to make the EEPROM writeable again before being able to re-flash it and a suitable warning process can be put in place to make sure the correct image is used.
 
 Address pins where present on a device should be set to make sure the EEPROM I2C address is 0x50. This usually means tying them all to zero. (NB reduced pin count variants of the recommended device – e.g. SOT23-5 package - usually have A[2:0] set to 0 anyway).
 
