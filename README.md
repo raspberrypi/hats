@@ -1,7 +1,5 @@
 # B+ ADD-ON BOARDS AND HATs
 
-**NOTE THIS INFORMATION IS CURRENTLY STILL CHANGING**
-
 **NOTE** All references to GPIO numbers within this document are referring to the BCM2835 GPIOs (**NOT** pin numbers on the Pi GPIO header).
 
 ## Indroduction
