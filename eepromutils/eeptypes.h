@@ -58,7 +58,7 @@ struct vendor_info_d {
 /* GPIO map atom data */
 struct gpio_map_d {
 	unsigned char flags;
-	unsigned char bank_drive;
+	unsigned char power;
 	unsigned char pins[28];
 };
 

@@ -52,7 +52,7 @@ gpio_hyteresis 0
 # 3 = reserved
 # If back_power=2 then USB high current mode will be automatically 
 # enabled on the Pi
-back_power=0
+back_power 0
 
 ########################################################################
 # GPIO pins, uncomment for GPIOs used on board

@@ -23,7 +23,7 @@ struct vendor_info_d* vinf;
 struct gpio_map_d* gpiomap;
 
 bool product_serial_set, product_id_set, product_ver_set, vendor_set, product_set, 
-			gpio_drive_set, gpio_slew_set, gpio_hyteresis_set;
+			gpio_drive_set, gpio_slew_set, gpio_hyteresis_set, gpio_power_set;
 			
 bool data_receive, has_dt, receive_dt;
 			
@@ -286,6 +286,14 @@ void parse_command(char* cmd, char* c) {
 		if (val>2 || val<0) printf("Warning: gpio_slew property in invalid region, using default value instead\n");
 		else gpiomap->flags |= val<<6;
 		
+	} else if (strcmp(cmd, "back_power")==0) {
+		gpio_power_set = true; //required field
+		
+		sscanf(c, "%100s %1x", cmd, &val);
+		
+		if (val>2 || val<0) printf("Warning: back_power property in invalid region, using default value instead\n");
+		else gpiomap->power = val;
+		
 	} else if (strcmp(cmd, "setgpio")==0) {
 		fn = (char*) malloc (101);
 		pull = (char*) malloc (101);
@@ -462,7 +470,7 @@ int read_text(char* in) {
 	finish_data();
 	
 	if (!product_serial_set || !product_id_set || !product_ver_set || !vendor_set || !product_set || 
-			!gpio_drive_set || !gpio_slew_set || !gpio_hyteresis_set) {
+			!gpio_drive_set || !gpio_slew_set || !gpio_hyteresis_set || !gpio_power_set) {
 			
 		printf("Warning: required fields missing in vendor information or GPIO map, using default values\n");
 	}
