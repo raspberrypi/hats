@@ -6,9 +6,25 @@
 
 **NOTE** All references to GPIO numbers within this document are referring to the BCM2835 GPIOs (**NOT** pin numbers on the J8 GPIO header).
 
-### GPIO Power-on State
+## GPIO Configuration Sequencing
 
-In the new B+ firmware after power-on the bank 0 GPIOs on 40W GPIO header J8 (except ID_SD and ID_SC which are GPIO0 and 1 respectiveley) will be inputs with either a pull up or pull down. The default pull state can be found in the [BCM2835 peripherals specificaion](http://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf) section 6.2 table 6-31 (see the "Pull" column).
+The default state for all Bank 0 pins on a Model B+ with recent firmware will be inputs with either a pull up or pull down. The default pull state can be found in the [BCM2835 peripherals specificaion](http://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf) section 6.2 table 6-31 (see the "Pull" column). It will require positive software configuration to change the state of these pins.
+
+The one exception to this rule is ID_SC and ID_SD. On a Model B+, GPIO0 (ID\_SD) and GPIO1 (ID\_SC) will be switched to ALT0 (I2C-0) mode and probed for an EEPROM. These pins will revert to inputs once the probe sequence has completed.
+
+### Videocore GPIO setup
+
+**As of 28/07/14, this section has only been partially implemented in firmware.**
+
+At a very early point in the boot process, either GPIOMAN (for recent firmware) or the Videocore platform code sets the initial state of GPIO pins.
+
+Note: For legacy platform code, several defaults were hardcoded. A Pi B+ with old firmware will assume that it is a Model B and as such up to three output pins may be driven as outputs on boot. See the following section for the GPIOs that may be driven as output by default and the recommended method of designing hardware to guard against this.
+
+After the GPIOMAN/platform code stage the VC bootloader will attempt to probe for an EEPROM attached to GPIO0 and GPIO1. If successful, a GPIO setup map (as described in the EEPROM data format) will be applied to Bank 0 pins. 
+
+Note: For newer firmware, a config.txt option exists to enable the UART on GPIO14/GPIO15 prior to booting the ARM. The EEPROM probe routine will override this behaviour if an EEPROM is found.
+
+**At this point the ARM is booted.** Linux now has notional exclusive control over the settings for Bank 0 pins (except GPIO0 ALT0 and GPIO1 ALT0) from this point onward.
 
 ### GPIO Requirements
 
