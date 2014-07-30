@@ -2,7 +2,7 @@
 
 **NOTE** All references to GPIO numbers within this document are referring to the BCM2835 GPIOs (**NOT** pin numbers on the Pi GPIO header).
 
-## Indroduction
+## Introduction
 
 The Raspberry Pi B+ has been designed specifically with add-on boards in mind. For B+ we are introducing 'HATs' (Hardware Attached on Top). A HAT is an add-on board for B+ that conforms to the HAT specifications. HATs are not backward compatible with models A and B.
 
