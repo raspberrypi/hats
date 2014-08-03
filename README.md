@@ -33,7 +33,7 @@ A board can only be called a HAT if:
 1. It conforms to the basic add-on board requirements
 2. It has a valid ID EEPROM (including vendor info, GPIO map and valid device tree information).
 3. It has a full size 40W GPIO connector.
-4. It follows the HAT [mechanical spcification](hat-board-mechanical.pdf)
+4. It follows the HAT [mechanical specification](hat-board-mechanical.pdf)
 5. It uses a GPIO connector that spaces the HAT between 10mm and 12mm from the Pi (i.e. uses spacers between 10mm and 12mm).
 6. If back powering via the GPIO connector the HAT must be able to supply a minimum of 1.3A continuously to the Pi (but ability to supply 2A continuously recommended).
 
