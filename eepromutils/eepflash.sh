@@ -44,8 +44,8 @@ while [ "$1" != "" ]; do
 			MODE="write"
 			;;
 		-t | --type)
-			if [ $VALUE = "24c32" ] || [ $VALUE = "24c64" ] || [ $VALUE = "24c128" ] ||
-				[ $VALUE = "24c256" ] || [ $VALUE = "24c512" ] || [ $VALUE = "24c1024" ]; then
+			if [ "$VALUE" = "24c32" ] || [ "$VALUE" = "24c64" ] || [ "$VALUE" = "24c128" ] ||
+				[ "$VALUE" = "24c256" ] || [ "$VALUE" = "24c512" ] || [ "$VALUE" = "24c1024" ]; then
 					TYPE=$VALUE
 			else
 				echo "ERROR: Unrecognised eeprom type. Try -h for help"
@@ -64,13 +64,13 @@ while [ "$1" != "" ]; do
     shift
 done
  
-if [ $MODE = "NOT_SET" ]; then
+if [ "$MODE" = "NOT_SET" ]; then
 	echo "You need to set mode (read or write). Try -h for help."
 	exit 1
-elif [ $FILE  = "NOT_SET" ]; then
+elif [ "$FILE"  = "NOT_SET" ]; then
 	echo "You need to set binary .eep file to read to/from. Try -h for help."
 	exit 1
-elif [ $TYPE = "NOT_SET" ]; then
+elif [ "$TYPE" = "NOT_SET" ]; then
 	echo "You need to set eeprom type. Try -h for help."
 	exit 1
 fi
