@@ -43,7 +43,7 @@ gpio_drive 0
 gpio_slew 0
 
 # 0=default, 1=hysteresis disabled, 2=hysteresis enabled, 3=reserved
-gpio_hyteresis 0
+gpio_hysteresis 0
 
 # If board back-powers Pi via 5V GPIO header pins:
 # 0 = board does not back-power

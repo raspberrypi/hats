@@ -90,7 +90,7 @@ int read_bin(char *in, char *outf) {
 			fprintf(out, "# GPIO map info\n");
 			fprintf(out, "gpio_drive %d\n", gpiomap.flags & 15); //1111
 			fprintf(out, "gpio_slew %d\n", (gpiomap.flags & 48)>>4); //110000
-			fprintf(out, "gpio_hyteresis %d\n", (gpiomap.flags & 192)>>6); //11000000
+			fprintf(out, "gpio_hysteresis %d\n", (gpiomap.flags & 192)>>6); //11000000
 			fprintf(out, "back_power %d\n", gpiomap.power);
 			fprintf(out, "#        GPIO  FUNCTION  PULL\n#        ----  --------  ----\n");
 
