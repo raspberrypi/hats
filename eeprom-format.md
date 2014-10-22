@@ -44,7 +44,8 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
   0x0002 = GPIO map
   0x0003 = Linux device tree blob
   0x0004 = manufacturer custom data
-  0x0005-0xfffe = reserved for future use
+  0x0005 = Vendor documentation URLs
+  0x0006-0xfffe = reserved for future use
   0xffff = invalid
 ```
 
@@ -100,3 +101,34 @@ manufacturers as a per-board 'serial number'.
 Binary data (DT blob fragment for board hardware).
 
 For more information on the Devicetree atom contents, see the [Devicetree Guide](devicetree-guide.md).
+
+### Manufacturer Custom Data atom (type=0x0004):
+
+This optional atom can be an arbitrary length (up to the size of free space in the EEPROM) with vendor-defined format. The envisaged usage for this atom would be board-specific data such as calibration information, input/output level trimming, information about embedded firmware revision/features etc.
+
+### Vendor documentation URLs (type=0x0005):
+
+This optional atom must contain a valid JSON structure.
+
+This JSON structure is intended to provide information to the end user such as usage guides, examples, schematics etc. The JSON format is used to allow ease of parsing by e.g. a helper application that notifies the user that additional information on this HAT is available on the internet.
+
+There are mandatory nodes and optional nodes in the JSON structure.
+
+#### Mandatory nodes:
+```json
+{
+  "vendor-website" : "Vendor 'front page' of site, e.g. http://raspberrypi.org",
+  "product-webpage" : "Vendor product page - e.g. landing page or portal",
+  "product-description" : "Brief textual description of the HAT",
+}
+```
+
+#### Optional nodes:
+```json
+{
+  "product-schematic" : "Vendor-provided electrical schematic",
+  "product-drawing" : "Vendor-provided mechanical drawing",
+  "product-usage-guide" : "Quick-start or general usage guide",
+}
+```
+Other arbitrary JSON nodes can be included in addition to the mandatory and optional nodes, but it cannot be guaranteed that a helper application will display these in a meaningful manner.
