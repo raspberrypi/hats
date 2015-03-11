@@ -12,7 +12,6 @@
 
 #include "eeptypes.h"
 
-#define GPIO_MAX 28
 #define HEADER_SIGN 0x69502d52 //"R-Pi" in ASCII reversed for endianness
 
 //todo: larger initial mallocs
@@ -300,7 +299,7 @@ void parse_command(char* cmd, char* c) {
 		
 		sscanf(c, "%100s %d %100s %100s", cmd, &val, fn, pull);
 		
-		if (val<2 || val>GPIO_MAX) printf("Error: GPIO number out of bounds\n");
+		if (val<2 || val>=GPIO_COUNT) printf("Error: GPIO number out of bounds\n");
 		else {
 			valid = true;
 			pin = 0;

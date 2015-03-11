@@ -19,6 +19,9 @@
 #define GPIO_SIZE 30
 #define CRC_SIZE 2
 
+#define GPIO_MIN 2
+#define GPIO_COUNT 28
+
 #define FORMAT_VERSION 0x01
 
 #define CRC16 0x8005
@@ -59,7 +62,7 @@ struct vendor_info_d {
 struct gpio_map_d {
 	unsigned char flags;
 	unsigned char power;
-	unsigned char pins[28];
+	unsigned char pins[GPIO_COUNT];
 };
 
 
