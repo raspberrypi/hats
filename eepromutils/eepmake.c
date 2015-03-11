@@ -299,7 +299,7 @@ void parse_command(char* cmd, char* c) {
 		
 		sscanf(c, "%100s %d %100s %100s", cmd, &val, fn, pull);
 		
-		if (val<2 || val>=GPIO_COUNT) printf("Error: GPIO number out of bounds\n");
+		if (val<GPIO_MIN || val>=GPIO_COUNT) printf("Error: GPIO number out of bounds\n");
 		else {
 			valid = true;
 			pin = 0;
