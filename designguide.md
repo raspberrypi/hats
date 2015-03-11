@@ -13,7 +13,7 @@ The one exception to this rule is ID_SC and ID_SD. On a Model B+, GPIO0 (ID\_SD)
 
 ### Videocore GPIO setup
 
-**As of 28/07/14, this section has only been partially implemented in firmware.**
+**As of 11/03/15, this section has been (largely) implemented in firmware. Only the gpio_hysteresis, gpio_slew and back_power are currently unsupported. **
 
 At a very early point in the boot process, either GPIOMAN (for recent firmware) or the Videocore platform code sets the initial state of GPIO pins.
 
