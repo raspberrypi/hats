@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #include "eeptypes.h"
 
@@ -49,7 +50,7 @@ int write_binary(char* out) {
 	offset = 0;
 	//vendor information atom first part
 	memcpy(current_atom, &vinf_atom, ATOM_SIZE-CRC_SIZE);
-	offset += ATOM_SIZE-2;
+	offset += ATOM_SIZE-CRC_SIZE;
 	//data first part
 	memcpy(current_atom+offset, vinf_atom.data, VENDOR_SIZE);
 	offset += VENDOR_SIZE;	
@@ -431,13 +432,13 @@ int read_text(char* in) {
 	
 	vinf_atom.type = ATOM_VENDOR_TYPE;
 	vinf_atom.count = ATOM_VENDOR_NUM;
-	vinf = (struct vendor_info_d *) malloc(sizeof(struct vendor_info_d));
+	vinf = (struct vendor_info_d *) calloc(1, sizeof(struct vendor_info_d));
 	vinf_atom.data = (char *)vinf;
 	vinf_atom.dlen = VENDOR_SIZE + CRC_SIZE;
 	
 	gpio_atom.type = ATOM_GPIO_TYPE;
 	gpio_atom.count = ATOM_GPIO_NUM;
-	gpiomap = (struct gpio_map_d *) malloc(sizeof(struct gpio_map_d));
+	gpiomap = (struct gpio_map_d *) calloc(1, sizeof(struct gpio_map_d));
 	gpio_atom.data = (char *)gpiomap;
 	gpio_atom.dlen = GPIO_SIZE + CRC_SIZE;
 	
