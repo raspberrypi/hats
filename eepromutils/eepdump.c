@@ -189,10 +189,12 @@ int read_bin(char *in, char *outf) {
 	//Total length checks. We need header.eeplen=current_position=file_length.
 	long pos = ftell(fp);
 	fseek(fp, 0L, SEEK_END);
-	
-	if (pos!=ftell(fp)) printf("Warning: Dump finished before EOF\n");
-	if (pos!=header.eeplen) printf("Warning: Dump finished before length specified in header\n");
-	if (ftell(fp)!=header.eeplen) printf("Warning: EOF does not match length specified in header\n");
+
+	long endpos = ftell(fp);
+
+	if (pos!=endpos) printf("Warning: Dump finished before EOF\n- pos=%ld endpos=%ld\n", pos, endpos);
+	if (pos!=header.eeplen) printf("Warning: Dump finished before length specified in header\n- pos=%ld header.eeplen=%u\n", pos, header.eeplen);
+	if (endpos!=header.eeplen) printf("Warning: EOF does not match length specified in header\n- endpos=%ld header.eeplen=%u\n", endpos, header.eeplen);
 	
 	printf("Done.\n");
 	
