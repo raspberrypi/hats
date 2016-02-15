@@ -4,11 +4,11 @@
 
 ## Introduction
 
-The Raspberry Pi has been designed specifically with add-on boards in mind. In 2014 after releasing the Raspberry Pi B+, we introduced 'HATs' (Hardware Attached on Top). A HAT is an add-on board that conforms to the HAT specification. HATs are compatible with any of the 40 pin Raspbery Pi's but are not backward compatible with models A and B.
+The Raspberry Pi has been designed specifically with add-on boards in mind. In 2014 after the release of the Raspberry Pi B+, we introduced "HATs" (Hardware Attached on Top). A HAT is any add-on board for Raspberry Pi that conforms to the HAT specification. HATs are compatible with any of the 40 pin Raspbery Pi's but are not backward compatible with models A and B as they use the old 26 pin headers.
 
-There are obviously a lot of add-on boards designed for the original model A and B boards (which interface to the original 26 way GPIO header). The first 26 pins of the B+ GPIO header are identical to those of the original models, so most existing boards will still work.
+There are obviously a lot of add-on boards designed for the original model A and B boards. On the 40 pin GPIO header, the first 26 pins are identical to those of the original models, so most existing boards will still work.
 
-As well as now being a 40W GPIO header (originals on B and A are 26W) the biggest change with these newer add-on boards versus the Model A and Model B boards is that the 40 pin header has 2 special pins (ID_SC and ID_SD) which are reserved exclusively for attaching an 'ID EEPROM'. The ID EEPROM contains data to identify the board, tells the Pi how the GPIOs need to be set up and what hardware is on the board. This allows the add-on board to be automatically identified and set up by the Pi software at boot time including loading all the necessary drivers.
+As well as now being a 40W GPIO header (originals on B and A are 26W) the biggest change with these newer add-on boards are that the 40 pin header has 2 special pins (ID_SC and ID_SD) which are reserved exclusively for attaching an "ID EEPROM". The ID EEPROM contains data to identify the board, tells the Pi how the GPIOs need to be set up and what hardware is on the board. This allows the add-on board to be automatically identified and set up by the Pi software at boot time including loading all the necessary drivers.
 
 While we cannot force anyone to follow our minimum requirements or HAT specification, doing so will make users lives easier, safer, and will make us more likely to recommend a product. Likewise if one of the minimum requirements is ignored we are unlikely to look on a product very favourably.
 
@@ -18,15 +18,15 @@ Finally if you have any questions please head over to the [forums](http://www.ra
 
 ## New add-on boards basic requirements
 
-If you are designing a new add-on board that takes advantage of the pins on the B+ GPIO header **other than the original 26** then you **must** follow the basic requirements:
+If you are designing a new add-on board that takes advantage of the pins on the new GPIO header **other than the original 26** then you **must** follow the basic requirements:
 
 1. The ID_SC and ID_SD pins must only be used for attaching a compatible ID EEPROM. **Do not use ID_SC and ID_SD pins for anything except connecting an ID EEPROM, if unused these pins must be left unconnected**
-2. If back-powering via the 5V GPIO header pins you must make sure that it is safe to do so even if the Pi 5V supply is also connected. Adding an ideal 'safety' diode identical to the one on B+ as per the relevant section of the [design guide](designguide.md) is the recommended way to do this.
+2. If back-powering via the 5V GPIO header pins you must make sure that it is safe to do so even if the Pi 5V supply is also connected. Adding an ideal 'safety' diode identical to the one on the B+ as per the relevant section of the [design guide](designguide.md) is the recommended way to do this.
 3. The board must protect against old firmware accidentally driving GPIO6,14,16 at boot time if any of those pins are also driven by the board itself.
 
 Note that for new designs that only use the original 26 way GPIO header pins it is still recommended to follow requirement 2. if the board supports back-powering a Pi.
 
-## B+ HAT requirements
+## **Minimum** HAT requirements
 
 A board can only be called a HAT if:
 
