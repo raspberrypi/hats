@@ -112,20 +112,20 @@ fi
 echo in > /sys/class/gpio/gpio28/direction
 echo in > /sys/class/gpio/gpio29/direction
 
-if [ ! -d "/sys/class/i2c-adapter/i2c-0/0-0050" ]; then
-	echo "$TYPE 0x50" > /sys/class/i2c-adapter/i2c-0/new_device
+if [ ! -d "/sys/class/i2c-adapter/i2c-1/1-0050" ]; then
+	echo "$TYPE 0x50" > /sys/class/i2c-adapter/i2c-1/new_device
 fi
 
 
 if [ "$MODE" = "write" ]
  then
 	echo "Writing..."
-	dd if=$FILE of=/sys/class/i2c-adapter/i2c-0/0-0050/eeprom
+	dd if=$FILE of=/sys/class/i2c-adapter/i2c-1/1-0050/eeprom
 	rc=$?
 elif [ "$MODE" = "read" ]
  then
 	echo "Reading..."
-	dd if=/sys/class/i2c-adapter/i2c-0/0-0050/eeprom of=$FILE
+	dd if=/sys/class/i2c-adapter/i2c-1/1-0050/eeprom of=$FILE
 	rc=$?
 fi
 
