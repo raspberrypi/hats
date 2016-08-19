@@ -75,8 +75,7 @@ elif [ "$TYPE" = "NOT_SET" ]; then
 	exit 1
 fi
 
-echo "This will disable the camera so you will need to REBOOT after this process completes."
-echo "This will attempt to write to i2c address 0x50. Make sure there is an eeprom at this address."
+echo "This will attempt to talk to an eeprom at i2c address 0x50. Make sure there is an eeprom at this address."
 echo "This script comes with ABSOLUTELY no warranty. Continue only if you know what you are doing."
 
 while true; do
@@ -88,10 +87,11 @@ while true; do
 	esac
 done
 
-modprobe i2c-bcm2708
+modprobe i2c_dev
+dtoverlay i2c-gpio i2c_gpio_sda=0 i2c_gpio_scl=1
 rc=$?
 if [ $rc != 0 ]; then
-	echo "Modprobe of i2c-bcm2708 failed. Do an rpi-update."
+	echo "Loading of i2c-gpio dtoverlay failed. Do an rpi-update (and maybe apt-get update; apt-get upgrade)."
 	exit $rc
 fi
 modprobe at24
@@ -101,31 +101,20 @@ if [ $rc != 0 ]; then
 	exit $rc
 fi
 
-if [ ! -d "/sys/class/gpio/gpio28" ]; then
-	echo 28 > /sys/class/gpio/export
-fi
-
-if [ ! -d "/sys/class/gpio/gpio29" ]; then
-	echo 29 > /sys/class/gpio/export
-fi
-
-echo in > /sys/class/gpio/gpio28/direction
-echo in > /sys/class/gpio/gpio29/direction
-
-if [ ! -d "/sys/class/i2c-adapter/i2c-0/0-0050" ]; then
-	echo "$TYPE 0x50" > /sys/class/i2c-adapter/i2c-0/new_device
+if [ ! -d "/sys/class/i2c-adapter/i2c-3/3-0050" ]; then
+	echo "$TYPE 0x50" > /sys/class/i2c-adapter/i2c-3/new_device
 fi
 
 
 if [ "$MODE" = "write" ]
  then
 	echo "Writing..."
-	dd if=$FILE of=/sys/class/i2c-adapter/i2c-0/0-0050/eeprom
+	dd if=$FILE of=/sys/class/i2c-adapter/i2c-3/3-0050/eeprom
 	rc=$?
 elif [ "$MODE" = "read" ]
  then
 	echo "Reading..."
-	dd if=/sys/class/i2c-adapter/i2c-0/0-0050/eeprom of=$FILE
+	dd if=/sys/class/i2c-adapter/i2c-3/3-0050/eeprom of=$FILE
 	rc=$?
 fi
 
