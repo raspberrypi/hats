@@ -1,5 +1,6 @@
 #!/bin/sh
 
+FORCE="NOT_SET"
 MODE="NOT_SET"
 FILE="NOT_SET"
 TYPE="NOT_SET"
@@ -28,7 +29,7 @@ if [ "$(id -u)" != "0" ]; then
    echo "This script must be run as root" 1>&2
    exit 1
 fi
- 
+
 while [ "$1" != "" ]; do
     PARAM=`echo $1 | awk -F= '{print $1}'`
     VALUE=`echo $1 | awk -F= '{print $2}'`
@@ -63,11 +64,11 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
- 
+
 if [ "$MODE" = "NOT_SET" ]; then
 	echo "You need to set mode (read or write). Try -h for help."
 	exit 1
-elif [ "$FILE"  = "NOT_SET" ]; then
+elif [ "$FILE" = "NOT_SET" ]; then
 	echo "You need to set binary .eep file to read to/from. Try -h for help."
 	exit 1
 elif [ "$TYPE" = "NOT_SET" ]; then
@@ -75,17 +76,24 @@ elif [ "$TYPE" = "NOT_SET" ]; then
 	exit 1
 fi
 
-echo "This will attempt to talk to an eeprom at i2c address 0x50. Make sure there is an eeprom at this address."
-echo "This script comes with ABSOLUTELY no warranty. Continue only if you know what you are doing."
+if [ "$MODE" = "write" ] && [ "$FORCE" = "NOT_SET" ]; then
+	echo ""
+	echo "This will attempt to talk to an eeprom at i2c address 0x50."
+	echo "Make sure there is an eeprom at this address."
+	echo "This script comes with ABSOLUTELY no warranty."
+	echo "Continue only if you know what you are doing."
+	echo ""
 
-while true; do
-	read -p "Do you wish to continue? (yes/no): " yn
-	case $yn in
-		yes | Yes ) break;;
-		no | No ) exit;;
-		* ) echo "Please type yes or no.";;
-	esac
-done
+	while true; do
+		read -p "Do you wish to continue? (yes/no): " yn
+		case $yn in
+			yes | Yes ) break;;
+			no | No ) exit;;
+			* ) echo "Please type yes or no.";;
+		esac
+	done
+	echo ""
+fi
 
 modprobe i2c_dev
 dtoverlay i2c-gpio i2c_gpio_sda=0 i2c_gpio_scl=1
@@ -124,3 +132,7 @@ if [ $rc != 0 ]; then
 else
 	echo "Done."
 fi
+
+dtoverlay -r i2c-gpio
+
+exit 0
