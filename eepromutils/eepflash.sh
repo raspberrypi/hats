@@ -88,11 +88,22 @@ while true; do
 done
 
 modprobe i2c_dev
-dtoverlay i2c-gpio i2c_gpio_sda=0 i2c_gpio_scl=1
-rc=$?
-if [ $rc != 0 ]; then
-	echo "Loading of i2c-gpio dtoverlay failed. Do an rpi-update (and maybe apt-get update; apt-get upgrade)."
-	exit $rc
+if [ -e "/dev/i2c-0" ]; then
+	BUS=0
+elif [ -e "/dev/i2c-3" ]; then
+	BUS=3
+else
+	dtoverlay i2c-gpio i2c_gpio_sda=0 i2c_gpio_scl=1
+	rc=$?
+	if [ $rc != 0 ]; then
+		echo "Loading of i2c-gpio dtoverlay failed. Do an rpi-update (and maybe apt-get update; apt-get upgrade)."
+		exit $rc
+	fi
+	if [ -e "/dev/i2c-3" ]; then
+		BUS=3
+	else
+		echo "Expected I2C bus (i2c-3) not found."
+	fi
 fi
 modprobe at24
 rc=$?
@@ -101,20 +112,22 @@ if [ $rc != 0 ]; then
 	exit $rc
 fi
 
-if [ ! -d "/sys/class/i2c-adapter/i2c-3/3-0050" ]; then
-	echo "$TYPE 0x50" > /sys/class/i2c-adapter/i2c-3/new_device
+SYS=/sys/class/i2c-adapter/i2c-$BUS
+
+if [ ! -d "$SYS/$BUS-0050" ]; then
+	echo "$TYPE 0x50" > $SYS/new_device
 fi
 
 
 if [ "$MODE" = "write" ]
  then
 	echo "Writing..."
-	dd if=$FILE of=/sys/class/i2c-adapter/i2c-3/3-0050/eeprom
+	dd if=$FILE of=$SYS/$BUS-0050/eeprom
 	rc=$?
 elif [ "$MODE" = "read" ]
  then
 	echo "Reading..."
-	dd if=/sys/class/i2c-adapter/i2c-3/3-0050/eeprom of=$FILE
+	dd if=$SYS/$BUS-0050/eeprom of=$FILE
 	rc=$?
 fi
 
