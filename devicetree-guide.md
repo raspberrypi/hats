@@ -6,7 +6,7 @@ Within the HAT specification is the requirement to include a data atom that cont
 
 First, read and understand what a device tree is and how it is used by system software (i.e. Linux).
 
-[Device Tree Usage](http://devicetree.org/Device_Tree_Usage)
+[Device Tree Usage](http://elinux.org/Device_Tree_Usage)
 
 [Device Tree For Dummies](http://events.linuxfoundation.org/sites/events/files/slides/petazzoni-device-tree-dummies.pdf)
 
