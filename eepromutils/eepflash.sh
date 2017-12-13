@@ -161,4 +161,3 @@ fi
 
 echo "Closing EEPROM Device."
 echo "0x$ADDR" > $SYS/delete_device
-
