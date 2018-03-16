@@ -1,4 +1,4 @@
-# B+ ADD-ON BOARD / HAT DESIGN GUIDE
+# ADD-ON BOARD / HAT DESIGN GUIDE
 ---
 
 ## GPIO Pins
@@ -35,7 +35,7 @@ Raspberry Pi models A and B use some bank 0 GPIOs for board control functions an
     GPIO14 -> UART_TX
     GPIO16 -> STATUS_LED
 
-**If a user boots a B+ with legacy firmware these pins may get driven so an add-on board must avoid driving these, or use a current limiting resistor (or some other protection) if that is not possible. Note also that a board must not rely on the pull state of these pins during boot**
+**If a user boots a Pi with legacy firmware these pins may get driven so an add-on board must avoid driving these, or use a current limiting resistor (or some other protection) if that is not possible. Note also that a board must not rely on the pull state of these pins during boot**
 
 ## ID EEPROM
 
@@ -72,13 +72,13 @@ Details of the EEPROM data format can be found in the [EEPROM format specificati
 
 The [following drawing](hat-board-mechanical.pdf) gives the mechanical details for add-on boards which conform to the HAT specification.
 
-## Back Powering the Pi via the J8 GPIO Header
+## Back Powering the Pi via the GPIO Header
 
 It is possible to power the Pi by supplying 5V through the GPIO header pins 2,4 and GND. The acceptable input voltage range is 5V ±5%.
 
 Raspberry Pi Model A+, B+, Raspberry Pi 2B and 3B have an 'ideal' reverse current blocking diode (ZVD) circuit on their 5V input. The 5V GPIO header pins connect to the 5V net after the micro-USB input, polyfuse and input 'ideal' diode [made up of the PFET and matched PNP transistors](zvd-circuit.png). The ideal diode stops any appreciable current flowing back out of the 5V micro USB should the 5V net on the board be at a higher voltage than the 5V micro USB input.
 
-If the add-on board uses any more GPIO connector pins than the first 26 (i.e. is designed for a B+) and provides back-powering via the 5V GPIO header pins it is required to:
+If the add-on board uses any more GPIO connector pins than the first 26 and provides back-powering via the 5V GPIO header pins it is required to:
 
 1. Implement a duplicate power safety diode before the HAT 5V net (which then feeds power back through the 5V GPIO pins) as shown in [this diagram](backpowering-diagram.png). Alternatively provide some other mechanism to guarantee that it is safe if both the Pi PSU and add-on board PSU are connected. It is still recommended to add this circuitry for new board designs that only implement the first 26 pins of the GPIO header but that also implement back powering (see below note)
 2. Make sure that the supply that does the back-powering can supply 5V at 2.5A.
