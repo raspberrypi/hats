@@ -3,13 +3,13 @@
 
 ## GPIO Pins
 
-**NOTE** All references to GPIO numbers within this document are referring to the BCM2835 GPIOs (**NOT** pin numbers on the J8 GPIO header).
+**NOTE** All references to GPIO numbers within this document are referring to the BCM283x GPIOs (**NOT** pin numbers on the GPIO header).
 
 ## GPIO Configuration Sequencing
 
-The default state for all Bank 0 pins on a Model B+ with recent firmware will be inputs with either a pull up or pull down. The default pull state can be found in the [BCM2835 peripherals specificaion](http://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf) section 6.2 table 6-31 (see the "Pull" column). It will require positive software configuration to change the state of these pins.
+The default state for all Bank 0 pins will be inputs with either a pull up or pull down. The default pull state can be found in the [BCM2835 peripherals specificaion](http://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf) section 6.2 table 6-31 (see the "Pull" column). It will require positive software configuration to change the state of these pins.
 
-The one exception to this rule is ID_SC and ID_SD. On a Model B+, GPIO0 (ID\_SD) and GPIO1 (ID\_SC) will be switched to ALT0 (I2C-0) mode and probed for an EEPROM. These pins will revert to inputs once the probe sequence has completed.
+The one exception to this rule is ID_SC and ID_SD. GPIO0 (ID\_SD) and GPIO1 (ID\_SC) will be switched to ALT0 (I2C-0) mode and probed for an EEPROM at boot time. These pins will revert to inputs once the probe sequence has completed.
 
 ### Videocore GPIO setup
 
@@ -17,7 +17,7 @@ The one exception to this rule is ID_SC and ID_SD. On a Model B+, GPIO0 (ID\_SD)
 
 At a very early point in the boot process, either GPIOMAN (for recent firmware) or the Videocore platform code sets the initial state of GPIO pins.
 
-Note: For legacy platform code, several defaults were hardcoded. A Pi B+ with old firmware will assume that it is a Model B and as such up to three output pins may be driven as outputs on boot. See the following section for the GPIOs that may be driven as output by default and the recommended method of designing hardware to guard against this.
+Note: For legacy platform code, several defaults were hardcoded. A Pi with old firmware (firmware older than the model release date) will often assume that it is a Pi 1 Model B and as such up to three output pins may be driven as outputs on boot. See the following section for the GPIOs that may be driven as output by default and the recommended method of designing hardware to guard against this.
 
 After the GPIOMAN/platform code stage the VC bootloader will attempt to probe for an EEPROM attached to GPIO0 and GPIO1. If successful, a GPIO setup map (as described in the EEPROM data format) will be applied to Bank 0 pins. 
 
@@ -39,7 +39,7 @@ Raspberry Pi models A and B use some bank 0 GPIOs for board control functions an
 
 ## ID EEPROM
 
-Within the set of pins available on the J8 GPIO header, ID_SC and ID_SD (GPIO0/SCL and GPIO1/SDA) are reserved for board detection / identification. **The only allowed connections to the ID_ pins are an ID EEPROM plus 3.9K pull up resistors. Do not connect anything else to these pins!**
+Within the set of pins available on the GPIO header, ID_SC and ID_SD (GPIO0/SCL and GPIO1/SDA) are reserved for board detection / identification. **The only allowed connections to the ID_ pins are an ID EEPROM plus 3.9K pull up resistors. Do not connect anything else to these pins!**
 
 The ID EEPROM is interrogated at boot time and provides the Pi with the vendor information, the required GPIO setup (pin settings and functions) for the board as well as a binary Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards (probably via a sysfs interface but this is TBD).
 
@@ -76,11 +76,13 @@ The [following drawing](hat-board-mechanical.pdf) gives the mechanical details f
 
 It is possible to power the Pi by supplying 5V through the GPIO header pins 2,4 and GND. The acceptable input voltage range is 5V ±5%.
 
-On the B+ Pi, the 5V GPIO header pins connect to the 5V net after the micro-USB input, polyfuse and input 'ideal' safety diode [made up of the PFET and matched PNP transistors](zvd-circuit.png). The 'safety' diode stops any appreciable current flowing back out of the 5V micro USB should the 5V net on the board be at a higher voltage than the 5V micro USB input.
+Raspberry Pi Model A+, B+, Raspberry Pi 2B and 3B have an 'ideal' reverse current blocking diode (ZVD) circuit on their 5V input. The 5V GPIO header pins connect to the 5V net after the micro-USB input, polyfuse and input 'ideal' diode [made up of the PFET and matched PNP transistors](zvd-circuit.png). The ideal diode stops any appreciable current flowing back out of the 5V micro USB should the 5V net on the board be at a higher voltage than the 5V micro USB input.
 
 If the add-on board uses any more GPIO connector pins than the first 26 (i.e. is designed for a B+) and provides back-powering via the 5V GPIO header pins it is required to:
 
-1. Implement a duplicate power safety diode before the HAT 5V net (which then feeds power back through the 5V GPIO pins) as shown in [this diagram](backpowering-diagram.png). Alternatively provide some other mechanism to guarantee that it is safe if both the Pi PSU and add-on board PSU are connected. It is still recommended to add this circuitry for new board designs that only implement the first 26 pins of the GPIO header but that also implement back powering.
-2. Make sure that the supply that does the back-powering can supply 5V at a minimum of 1.3A to the Pi at all times (but recommended to support 2A).
+1. Implement a duplicate power safety diode before the HAT 5V net (which then feeds power back through the 5V GPIO pins) as shown in [this diagram](backpowering-diagram.png). Alternatively provide some other mechanism to guarantee that it is safe if both the Pi PSU and add-on board PSU are connected. It is still recommended to add this circuitry for new board designs that only implement the first 26 pins of the GPIO header but that also implement back powering (see below note)
+2. Make sure that the supply that does the back-powering can supply 5V at 2.5A.
 
-**Under no circumstances should a power source be connected to the J8 3.3V pins.**
+NOTE that the Raspberry Pi 3B+ and Pi Zero and ZeroW **do not** include an input ZVD. The micro-USB input on a Pi is expected to / almost universally is driven by a power source which does not sink current, i.e. it will not try to actively pull down a voltage higher than its regulated voltage. If a HAT back-powers a Pi and uses a power source that does not try to sink current (and will safely stop/pause regulation if its input voltage is higher than its regulation voltage) it is OK to not include a ZVD on a HAT. If you are unsure or don't know then please include the ZVD! The HAT designer is responsible for the safety of their product.
+
+**Under no circumstances should a power source be connected to the GPIO header 3.3V pins.**
