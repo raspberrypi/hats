@@ -30,6 +30,10 @@ vendor "ACME Technology Company"
 # ASCII product string (max 255 characters)
 product "Special Sensor Board"
 
+# Custom binary data
+custom_data
+c0ffee
+end
 
 ########################################################################
 # GPIO bank settings, set to nonzero to change from the default.
