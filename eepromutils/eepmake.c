@@ -167,6 +167,7 @@ void parse_data(char* c) {
 
 void finish_data() {
 	if (data_receive) {
+		data_receive = false;
 		*data = (char *) realloc(*data, data_len);
 			
 		total_size+=ATOM_SIZE+data_len;
