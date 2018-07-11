@@ -33,7 +33,7 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
   2       count       incrementing atom count
   4       dlen        length in bytes of data+CRC
   N       data        N bytes, N = dlen-2
-  2       crc16       CRC-16-CCITT of entire atom (type, count, dlen, data)
+  2       crc16       CRC-16 of entire atom (type, count, dlen, data)
 ```
 
 ## Atom Types
