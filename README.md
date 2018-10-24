@@ -6,6 +6,8 @@
 
 The Raspberry Pi boards with 40W GPIO headers (Model B+ and onwards) and have been designed specifically with add-on boards in mind. These boards support 'HATs' (Hardware Attached on Top). A HAT is an add-on board that conforms to the HAT specifications. HATs are not backward compatible with original Raspberry Pi 1 models A and B.
 
+In October 2018 Raspberry Pi introduced the Micro-HAT (uHAT) specification. uHATs must follow all of the standard electrical HAT rules as laid our for normal HATs, but they have a smaller mechanical form factor as specified [here](uhat-board-mechanical.pdf)
+
 There are obviously a lot of add-on boards designed for the original model A and B boards (which interface to the original 26 way GPIO header). The first 26 pins of the 40W GPIO header are identical to those of the original models, so most existing boards will still work.
 
 The biggest change with HAT add-on boards versus older boards designed for models A and B is that the 40W header has 2 special pins (ID_SC and ID_SD) that are reserved exclusively for attaching an 'ID EEPROM'. The ID EEPROM contains data that identifies the board, tells the Pi how the GPIOs need to be set up and what hardware is on the board. This allows the add-on board to be automatically identified and set up by the Pi software at boot time including loading all the necessary drivers.
