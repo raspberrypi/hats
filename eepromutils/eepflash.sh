@@ -19,7 +19,7 @@ usage()
 	echo "	-a= --address= i2c EEPROM address"
 	echo "	-t=eeprom_type --type=eeprom_type: EEPROM type to use"
 	echo "		We support the following EEPROM types:"
-	echo "          	24c32"
+	echo "			24c32"
 	echo "			24c64"
 	echo "			24c128"
 	echo "			24c256"
