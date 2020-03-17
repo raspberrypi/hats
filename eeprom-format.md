@@ -95,8 +95,8 @@ manufacturers as a per-board 'serial number'.
             [  7] is_used     1=board uses this pin, 0=not connected and therefore not used
 ```
 
-### Device tree atom data (type=0x0003):
+### Device Tree atom data (type=0x0003):
 
-Binary data (DT blob fragment for board hardware).
+Binary data (the name or contents of a `.dtbo` overlay, for board hardware).
 
-For more information on the Devicetree atom contents, see the [Devicetree Guide](devicetree-guide.md).
+For more information on the Device Tree atom contents, see the [Device Tree Guide](devicetree-guide.md).
