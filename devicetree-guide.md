@@ -1,6 +1,6 @@
 # HAT Devicetree Blob guide
 
-###**This section is under active development and portions of the guide rely on software features not yet implemented.**
+### **This section is under active development and portions of the guide rely on software features not yet implemented.**
 ---
 Within the HAT specification is the requirement to include a data atom that contains a devicetree overlay binary (`.dtbo` or `-overlay.dtb`).
 
