@@ -39,7 +39,7 @@ Raspberry Pi models A and B use some bank 0 GPIOs for board control functions an
 
 ## ID EEPROM
 
-Within the set of pins available on the GPIO header, ID_SC and ID_SD (GPIO0/SCL and GPIO1/SDA) are reserved for board detection / identification. **The only allowed connections to the ID_ pins are an ID EEPROM plus 3.9K pull up resistors. Do not connect anything else to these pins!**
+Within the set of pins available on the GPIO header, pin 27 (ID_SD/SDA/GPIO0) and pin 28 (ID_SC/SCL/GPIO1) are reserved for board detection / identification. **The only allowed connections to the ID_ pins are an ID EEPROM plus 3.9K pull up resistors. Do not connect anything else to these pins!**
 
 The ID EEPROM is interrogated at boot time and provides the Pi with the vendor information, the required GPIO setup (pin settings and functions) for the board as well as a binary Linux device tree fragment which also specifies which hardware is used and therefore which drivers need loading. EEPROM information is also available to userland Linux software for identifying attached boards (probably via a sysfs interface but this is TBD).
 
