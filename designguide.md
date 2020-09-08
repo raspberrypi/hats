@@ -56,7 +56,18 @@ Pull-ups must be provided on the top board for ID_SC and ID_SD (SCL and SDA resp
 
 **Note:** Due to the restrictions above (only using non-paged 16-bit addressable devices is allowed), many of the smaller and larger I2C EEPROMs are ruled out - please check datasheets carefully when choosing a suitable EEPROM for your HAT.
 
-A recommended part that satisfies the above constraints is OnSemi CAT24C32 which is a 32kbit (4kbyte) device. The minimum EEPROM size required is variable and depends on the size of the vendor data strings in the EEPROM and whether a device tree data blob is included (and its size) and whether any other vendor specific data is included.
+The minimum EEPROM size required is variable and depends on the size of the vendor data strings in the EEPROM and whether a device tree data blob is included (and its size) and whether any other vendor specific data is included.
+
+Some parts that satisfy the above constraints are listed below:
+
+Manufacturer | Density | Part Number
+------------ | ------- | -----------
+Atmel        | 32Kbit  | AT24C32E
+Atmel        | 256Kbit | AT24C256C
+OnSemi       | 32Kbit  | CAT24C32
+OnSemi       | 256Kbit | CAT24C256
+ST Micro     | 32Kbit  | M24C32-F
+ST Micro     | 256Kbit | M24256-BR
 
 It is recommended that EEPROM WP (write protect) pin be connected to a test point on the board and pulled up to 3V3 with a 1K resistor. The idea is that at board test/probe the EEPROM can be written (WP pin can be driven LOW), but there is no danger of a user accidentally changing the device contents once the board leaves the factory. Note that the recommended device has an internal pull down hence the stiff (1K) pull up is required. Note that on some devices WP does not write protect the entire array – avoid using these.
 
