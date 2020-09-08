@@ -54,7 +54,7 @@ Pull-ups must be provided on the top board for ID_SC and ID_SD (SCL and SDA resp
 - Devices that perform I2C clock stretching are not supported.
 - Write protect pin must be supported and protect the entire device memory.
 
-Note that due to the restrictions above (only using non-paged 16-bit addressable devices is allowed), many of the smaller I2C EEPROMs are ruled out - please check datasheets carefully when choosing a suitable EEPROM for your HAT.
+**Note:** Due to the restrictions above (only using non-paged 16-bit addressable devices is allowed), many of the smaller and larger I2C EEPROMs are ruled out - please check datasheets carefully when choosing a suitable EEPROM for your HAT.
 
 A recommended part that satisfies the above constraints is OnSemi CAT24C32 which is a 32kbit (4kbyte) device. The minimum EEPROM size required is variable and depends on the size of the vendor data strings in the EEPROM and whether a device tree data blob is included (and its size) and whether any other vendor specific data is included.
 
