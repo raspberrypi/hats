@@ -69,7 +69,7 @@ OnSemi       | 256Kbit | CAT24C256
 ST Micro     | 32Kbit  | M24C32-F
 ST Micro     | 256Kbit | M24256-BR
 
-It is recommended that EEPROM WP (write protect) pin be connected to a test point on the board and pulled up to 3V3 with a 1K resistor. The idea is that at board test/probe the EEPROM can be written (WP pin can be driven LOW), but there is no danger of a user accidentally changing the device contents once the board leaves the factory. Note that the recommended device has an internal pull down hence the stiff (1K) pull up is required. Note that on some devices WP does not write protect the entire array – avoid using these.
+It is recommended that EEPROM WP (write protect) pin be connected to a test point on the board and pulled up to 3V3 with a 1K resistor. The idea is that at board test/probe the EEPROM can be written (WP pin can be driven LOW), but there is no danger of a user accidentally changing the device contents once the board leaves the factory. Note that on some devices WP does not write protect the entire array (often called half-array, quarter-array, or partial-array write protection) – avoid using these.
 
 It may be desirable for a board to have the ability for its EEPROM to be reflashed by an end user, in this case it is recommended to also include a user settable jumper to short WP to GND and make the EEPROM writable once more. At least this way a user has to perform a specific action to make the EEPROM writeable again before being able to re-flash it and a suitable warning process can be put in place to make sure the correct image is used.
 
