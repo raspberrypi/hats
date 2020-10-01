@@ -105,19 +105,19 @@ modprobe i2c_dev
 if [ "$BUS" = "NOT_SET" ]; then
 	if [ -e "/dev/i2c-0" ]; then
 		BUS=0
-	elif [ -e "/dev/i2c-10" ]; then
-		BUS=10
+	elif [ -e "/dev/i2c-9" ]; then
+		BUS=9
 	else
-		dtoverlay i2c-gpio i2c_gpio_sda=0 i2c_gpio_scl=1 bus=10
+		dtoverlay i2c-gpio i2c_gpio_sda=0 i2c_gpio_scl=1 bus=9
 		rc=$?
 		if [ $rc != 0 ]; then
 			echo "Loading of i2c-gpio dtoverlay failed. Do an rpi-update (and maybe apt-get update; apt-get upgrade)."
 			exit $rc
 		fi
-		if [ -e "/dev/i2c-10" ]; then
-			BUS=10
+		if [ -e "/dev/i2c-9" ]; then
+			BUS=9
 		else
-			echo "Expected I2C bus (i2c-10) not found."
+			echo "Expected I2C bus (i2c-9) not found."
 		fi
 	fi
 fi
