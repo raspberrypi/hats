@@ -1,6 +1,6 @@
 /*
- *	Parses EEPROM text file and createds binary .eep file
- *	Usage: eepmake input_file output_file
+ *  Parses EEPROM text file and createds binary .eep file
+ *  Usage: eepmake input_file output_file
 */
 
 #include <stdio.h>
@@ -24,28 +24,38 @@ struct gpio_map_d* gpiomap;
 
 bool product_serial_set, product_id_set, product_ver_set, vendor_set, product_set, 
 			gpio_drive_set, gpio_slew_set, gpio_hysteresis_set, gpio_power_set;
-			
+
 bool data_receive, has_dt, receive_dt;
-			
+
 char **data;
 char *current_atom; //rearranged to write out
 unsigned int data_len, custom_ct, total_size, data_cap, custom_cap;
 
+// For string evaluation in parse_command
+unsigned long hash(unsigned char *str) {
+    unsigned long hash = 5381;
+    int c;
 
-int write_binary(char* out) {
+    while (c = *str++)
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+    return hash;
+}
+
+bool write_binary(char* out) {
 	FILE *fp;
 	int i, offset;
 	short crc;
-	
+
 	fp=fopen(out, "wb");
 	if (!fp) {
 		printf("Error writing file %s\n", out);
-		return -1;
+		return false;
 	}
-	
+
 	fwrite(&header, sizeof(header), 1, fp);
-		
-		
+
+
 	current_atom = (char *) malloc(vinf_atom.dlen+ATOM_SIZE-CRC_SIZE);
 	offset = 0;
 	//vendor information atom first part
@@ -53,7 +63,7 @@ int write_binary(char* out) {
 	offset += ATOM_SIZE-2;
 	//data first part
 	memcpy(current_atom+offset, vinf_atom.data, VENDOR_SIZE);
-	offset += VENDOR_SIZE;	
+	offset += VENDOR_SIZE;
 	//data strings
 	memcpy(current_atom+offset, vinf->vstr, vinf->vslen);
 	offset += vinf->vslen;
@@ -63,10 +73,10 @@ int write_binary(char* out) {
 	crc = getcrc(current_atom, offset);
 	memcpy(current_atom+offset, &crc, CRC_SIZE);
 	offset += CRC_SIZE;
-	
+
 	fwrite(current_atom, offset, 1, fp);
 	free(current_atom);
-	
+
 	current_atom = (char *) malloc(gpio_atom.dlen+ATOM_SIZE-CRC_SIZE);
 	offset = 0;
 	//GPIO map first part
@@ -79,53 +89,53 @@ int write_binary(char* out) {
 	crc = getcrc(current_atom, offset);
 	memcpy(current_atom+offset, &crc, CRC_SIZE);
 	offset += CRC_SIZE;
-	
+
 	fwrite(current_atom, offset, 1, fp);
 	free(current_atom);
-	
+
 	if (has_dt) {
 		printf("Writing out DT...\n");
 		current_atom = (char *) malloc(dt_atom.dlen+ATOM_SIZE-CRC_SIZE);
 		offset = 0;
-		
+
 		memcpy(current_atom, &dt_atom, ATOM_SIZE-CRC_SIZE);
 		offset += ATOM_SIZE-CRC_SIZE;
-		
+
 		memcpy(current_atom+offset, dt_atom.data, dt_atom.dlen-CRC_SIZE);
 		offset += dt_atom.dlen-CRC_SIZE;
-		
+
 		crc = getcrc(current_atom, offset);
 		memcpy(current_atom+offset, &crc, CRC_SIZE);
 		offset += CRC_SIZE;
-		
+
 		fwrite(current_atom, offset, 1, fp);
 		free(current_atom);
 	}
-	
+
 	for (i = 0; i<custom_ct; i++) {
 		custom_atom[i].count-=!has_dt;
-		
+
 		current_atom = (char *) malloc(custom_atom[i].dlen+ATOM_SIZE-CRC_SIZE);
 		offset = 0;
-		
+
 		memcpy(current_atom, &custom_atom[i], ATOM_SIZE-CRC_SIZE);
 		offset += ATOM_SIZE-CRC_SIZE;
-		
+
 		memcpy(current_atom+offset, custom_atom[i].data, custom_atom[i].dlen-CRC_SIZE);
 		offset += custom_atom[i].dlen-CRC_SIZE;
-		
+
 		crc = getcrc(current_atom, offset);
 		memcpy(current_atom+offset, &crc, CRC_SIZE);
 		offset += CRC_SIZE;
-		
+
 		fwrite(current_atom, offset, 1, fp);
 		free(current_atom);
 	}
-	
-	
+
+
 	fflush(fp);
 	fclose(fp);
-	return 0;
+	return true;
 }
 
 
@@ -134,14 +144,15 @@ void parse_data(char* c) {
 	char s;
 	char* i = c;
 	char* j = c;
+
 	while(*j != '\0')
 	{
 		*i = *j++;
-		if(isxdigit(*i))
+		if (isxdigit(*i))
 			i++;
 	}
 	*i = '\0';
-	
+
 	int len = strlen(c);
 	if (len % 2 != 0) {
 		printf("Error: data must have an even number of hex digits\n");
@@ -180,7 +191,7 @@ void finish_data() {
 			custom_atom[custom_ct].type = ATOM_CUSTOM_TYPE;
 			custom_atom[custom_ct].count = 3+custom_ct;
 			custom_atom[custom_ct].dlen = data_len+CRC_SIZE;
-			
+
 			custom_ct++;
 		}
 	}
@@ -199,13 +210,13 @@ void parse_command(char* cmd, char* c) {
 	if (strcmp(cmd, "product_uuid")==0) {
 		product_serial_set = true; //required field
 		high1 = 0; high2 = 0;
-		
+
 		sscanf(c, "%100s %08x-%04x-%04x-%04x-%04x%08x\n", cmd, &vinf->serial_4, 
 			&high1, &vinf->serial_3, &high2, &vinf->serial_2, &vinf->serial_1);
-		
+
 		vinf->serial_3 |= high1<<16;
 		vinf->serial_2 |= high2<<16;
-		
+
 		if ((vinf->serial_4==0) && (vinf->serial_3==0) && (vinf->serial_2==0) && (vinf->serial_1==0)) {
 			//read 128 random bits from /dev/urandom
 			int random_file = open("/dev/urandom", O_RDONLY);
@@ -215,23 +226,23 @@ void parse_command(char* cmd, char* c) {
 			else {
 				//put in the version
 				vinf->serial_3 = (vinf->serial_3 & 0xffff0fff) | 0x00004000;
-				
+
 				//put in the variant
 				vinf->serial_2 = (vinf->serial_2 & 0x3fffffff) | 0x80000000;
-				
+
 				printf("UUID=%08x-%04x-%04x-%04x-%04x%08x\n", vinf->serial_4, vinf->serial_3>>16, vinf->serial_3 & 0xffff, vinf->serial_2>>16, vinf->serial_2 & 0xffff, vinf->serial_1);
 			}
  
 		}
-		
+
 	} else if (strcmp(cmd, "product_id")==0) {
 		product_id_set = true; //required field
 		sscanf(c, "%100s %hx", cmd, &vinf->pid);
-		
+
 	} else if (strcmp(cmd, "product_ver")==0) {
 		product_ver_set = true; //required field
 		sscanf(c, "%100s %hx", cmd, &vinf->pver);
-		
+
 	} else if (strcmp(cmd, "vendor")==0) {
 		vendor_set = true; //required field
 		
@@ -266,33 +277,40 @@ void parse_command(char* cmd, char* c) {
 		gpio_drive_set = true; //required field
 		
 		sscanf(c, "%100s %1x", cmd, &val);
-		if (val>8 || val<0) printf("Warning: gpio_drive property in invalid region, using default value instead\n");
-		else gpiomap->flags |= val;
-		
+		if (val>8 || val<0)
+			printf("Warning: gpio_drive property in invalid region, using default value instead\n");
+		else
+			gpiomap->flags |= val;
 		
 	} else if (strcmp(cmd, "gpio_slew")==0) {
 		gpio_slew_set = true; //required field
 		
 		sscanf(c, "%100s %1x", cmd, &val);
 		
-		if (val>2 || val<0) printf("Warning: gpio_slew property in invalid region, using default value instead\n");
-		else gpiomap->flags |= val<<4;
+		if (val>2 || val<0)
+			printf("Warning: gpio_slew property in invalid region, using default value instead\n");
+		else
+			gpiomap->flags |= val<<4;
 		
 	} else if (strcmp(cmd, "gpio_hysteresis")==0) {
 		gpio_hysteresis_set = true; //required field
 		
 		sscanf(c, "%100s %1x", cmd, &val);
 		
-		if (val>2 || val<0) printf("Warning: gpio_hysteresis property in invalid region, using default value instead\n");
-		else gpiomap->flags |= val<<6;
+		if (val>2 || val<0)
+			printf("Warning: gpio_hysteresis property in invalid region, using default value instead\n");
+		else
+			gpiomap->flags |= val<<6;
 		
 	} else if (strcmp(cmd, "back_power")==0) {
 		gpio_power_set = true; //required field
 		
 		sscanf(c, "%100s %1x", cmd, &val);
 		
-		if (val>2 || val<0) printf("Warning: back_power property in invalid region, using default value instead\n");
-		else gpiomap->power = val;
+		if (val>2 || val<0)
+			printf("Warning: back_power property in invalid region, using default value instead\n");
+		else
+			gpiomap->power = val;
 		
 	} else if (strcmp(cmd, "setgpio")==0) {
 		fn = (char*) malloc (101);
@@ -300,48 +318,54 @@ void parse_command(char* cmd, char* c) {
 		
 		sscanf(c, "%100s %d %100s %100s", cmd, &val, fn, pull);
 		
-		if (val<GPIO_MIN || val>=GPIO_COUNT) printf("Error: GPIO number out of bounds\n");
+		if (val<GPIO_MIN || val>=GPIO_COUNT)
+			printf("Error: GPIO number out of bounds\n");
 		else {
 			valid = true;
 			pin = 0;
 			
-			if (strcmp(fn, "INPUT")==0) {
-				//no action
-			} else if (strcmp(fn, "OUTPUT")==0) {
-				pin |= 1;
-			} else if (strcmp(fn, "ALT0")==0) {
-				pin |= 4;
-			} else if (strcmp(fn, "ALT1")==0) {
-				pin |= 5;
-			} else if (strcmp(fn, "ALT2")==0) {
-				pin |= 6;
-			} else if (strcmp(fn, "ALT3")==0) {
-				pin |= 7;
-			} else if (strcmp(fn, "ALT4")==0) {
-				pin |= 3;
-			} else if (strcmp(fn, "ALT5")==0) {
-				pin |= 2;
-			} else {
-				printf("Error at setgpio: function type not recognised\n");
-				valid=false;
+			switch(hash(fn)){
+				case 210677015061:  // hash "INPUT"
+					/* no action */  break;
+				case 6952584749238: // hash "OUTPUT"
+					pin |= 1;  break;
+				case 6383862390:    // hash "ALT0"
+					pin |= 4;  break;
+				case 6383862391:    // hash "ALT1"
+					pin |= 5;  break;
+				case 6383862392:    // hash "ALT2"
+					pin |= 6;  break;
+				case 6383862393:    // hash "ALT3"
+					pin |= 7;  break;
+				case 6383862394:    // hash "ALT4"
+					pin |= 3;  break;
+				case 6383862395:    // hash "ALT5"
+					pin |= 2;  break;
+				default:
+					printf("Error at setgpio: function type not recognised\n");
+					valid=false;
+					break;
 			}
 			
-			if (strcmp(pull, "DEFAULT")==0) {
-				//no action
-			} else if (strcmp(pull, "UP")==0) {
-				pin |= 1<<5;
-			} else if (strcmp(pull, "DOWN")==0) {
-				pin |= 2<<5;
-			} else if (strcmp(pull, "NONE")==0) {
-				pin |= 3<<5;
-			} else {
-				printf("Error at setgpio: pull type not recognised\n");
-				valid=false;
+			switch(hash(pull)){
+				case 229420447268778: // hash "DEFAULT"
+					/* no action */ break;
+				case 5862794:         // hash "UP"
+					pin |= 1<<5;  break;
+				case 6383973597:      // hash "DOWN"
+					pin |= 2<<5;  break;
+				case 6384332661:      // hash "NONE"
+					pin |= 3<<5;  break;
+				default:
+					printf("Error at setgpio: pull type not recognised\n");
+					valid=false;
+					break;
 			}
 			
 			pin |= 1<<7; //board uses this pin
 			
-			if (valid) gpiomap->pins[val] = pin;
+			if (valid)
+				gpiomap->pins[val] = pin;
 		}
 	} 
 	
@@ -362,7 +386,6 @@ void parse_command(char* cmd, char* c) {
 		
 		parse_data(c);
 		continue_data = true;
-	
 	} 
 	
 	/* Custom data related part */
@@ -386,7 +409,6 @@ void parse_command(char* cmd, char* c) {
 		
 		parse_data(c);
 		continue_data = true;
-	
 	} else if (strcmp(cmd, "end") ==0) {
 		//close last data atom
 		continue_data=false;
@@ -397,12 +419,11 @@ void parse_command(char* cmd, char* c) {
 		continue_data = true;
 	} 
 	
-	
-	if (!continue_data) finish_data();
-	
+	if (!continue_data)
+		finish_data();
 }
 
-int read_text(char* in) {
+bool read_text(char* in) {
 	FILE * fp;
 	char * line = NULL;
 	char * c = NULL;
@@ -421,7 +442,7 @@ int read_text(char* in) {
 	fp = fopen(in, "r");
 	if (fp == NULL) {
 		printf("Error opening input file\n");
-		return -1;
+		return false;
 	}
 
 	//allocating memory and setting up required atoms
@@ -446,10 +467,12 @@ int read_text(char* in) {
 		linect++;
 		c = line;
 		
-		for (i=0; i<read; i++) if (c[i]=='#') c[i]='\0';
+		for (i=0; i<read; i++)
+			if (c[i]=='#')
+				c[i]='\0';
 		
-		while (isspace(*c)) ++c;
-		
+		while (isspace(*c))
+			++c;
 		
 		if (*c=='\0' || *c=='\n' || *c=='\r') {
 			//empty line, do nothing
@@ -458,11 +481,11 @@ int read_text(char* in) {
 			
 #ifdef DEBUG
 			printf("Processing line %u: %s", linect, c);
-			if ((*(c+strlen(c)-1))!='\n') printf("\n");
+			if ((*(c+strlen(c)-1))!='\n')
+				printf("\n");
 #endif
-			
+
 			parse_command(command, c);
-		
 		
 		} else printf("Can't parse line %u: %s", linect, c);
 	}
@@ -470,18 +493,17 @@ int read_text(char* in) {
 	finish_data();
 	
 	if (!product_serial_set || !product_id_set || !product_ver_set || !vendor_set || !product_set || 
-			!gpio_drive_set || !gpio_slew_set || !gpio_hysteresis_set || !gpio_power_set) {
-			
+			!gpio_drive_set || !gpio_slew_set || !gpio_hysteresis_set || !gpio_power_set)
+	{
 		printf("Warning: required fields missing in vendor information or GPIO map, using default values\n");
 	}
 	
 	printf("Done reading\n");
 	
-	return 0;
+	return true;
 }
 
-
-int read_dt(char* in) {
+bool read_dt(char* in) {
 	FILE * fp;
 	unsigned long size = 0;
 	
@@ -490,7 +512,7 @@ int read_dt(char* in) {
 	fp = fopen(in, "r");
 	if (fp == NULL) {
 		printf("Error opening input file\n");
-		return -1;
+		return false;
 	}
 	
 	fseek(fp, 0L, SEEK_END);
@@ -508,18 +530,16 @@ int read_dt(char* in) {
 	dt_atom.data = (char *) malloc(size);
 	if (!fread(dt_atom.data, size, 1, fp)) goto err;
 	
-	
 	fclose(fp);
-	return 0;
+	return true;
 	
 err:
 	printf("Unexpected EOF or error occurred\n");
 	fclose(fp);
-	return 0;
-	
+	return true;
 }
 
-int read_custom(char* in) {
+bool read_custom(char* in) {
 	FILE * fp;
 	unsigned long size = 0;
 	
@@ -528,7 +548,7 @@ int read_custom(char* in) {
 	fp = fopen(in, "r");
 	if (fp == NULL) {
 		printf("Error opening input file\n");
-		return -1;
+		return false;
 	}
 	
 	fseek(fp, 0L, SEEK_END);
@@ -549,29 +569,26 @@ int read_custom(char* in) {
 	custom_ct++;
 	
 	fclose(fp);
-	return 0;
+	return true;
 	
 err:
 	printf("Unexpected EOF or error occurred\n");
 	fclose(fp);
-	return 0;
-	
+	return true;
 }
+
 int main(int argc, char *argv[]) {
-	int ret;
 	int i, custom_o=0;
 	
 	if (argc<3) {
 		printf("Wrong input format.\n");
 		printf("Try 'eepmake input_file output_file [dt_file] [-c custom_file_1 ... custom_file_n]'\n");
-		return 0;
+		return EXIT_FAILURE;
 	}
 	
-	
-	ret = read_text(argv[1]);
-	if (ret) {
+	if (read_text(argv[1])) {
 		printf("Error reading and parsing input, aborting\n");
-		return 0;
+		return EXIT_FAILURE;
 	}
 	
 	if (argc>3) {
@@ -579,24 +596,25 @@ int main(int argc, char *argv[]) {
 			custom_o=4;
 		} else {
 			//DT file specified
-			if (dt_atom.dlen) total_size-=(ATOM_SIZE +dt_atom.dlen - CRC_SIZE);
-			ret = read_dt(argv[3]);
-			if (ret) {
+			if (dt_atom.dlen)
+				total_size-=(ATOM_SIZE +dt_atom.dlen - CRC_SIZE);
+
+			if (read_dt(argv[3])) {
 				printf("Error reading DT file, aborting\n");
-				return 0;
+				return EXIT_FAILURE;
 			}
 		}
 	}
 	
-	if (argc>4 && strcmp(argv[4], "-c")==0) custom_o = 5;
+	if (argc>4 && strcmp(argv[4], "-c") == 0)
+		custom_o = 5;
 
 	if (custom_o)
 		for (i = custom_o; i<argc; i++) {
 			//new custom data file
-			ret = read_custom(argv[i]);
-			if (ret) {
+			if (read_custom(argv[i])) {
 				printf("Error reading DT file, aborting\n");
-				return 0;
+				return EXIT_FAILURE;
 			}
 		}
 	
@@ -608,13 +626,12 @@ int main(int argc, char *argv[]) {
 	
 	printf("Writing out...\n");
 	
-	ret = write_binary(argv[2]);
-	if (ret) {
+	if (write_binary(argv[2])) {
 		printf("Error writing output\n");
-		return 0;
+		return EXIT_FAILURE;
 	}
 	
 	printf("Done.\n");
 
-	return 0;
+	return EXIT_SUCCESS;
 }
