@@ -12,19 +12,19 @@ usage()
 	echo ""
 	echo "./eepflash.sh"
 	echo "	-h --help: display this help message"
-	echo "	-r --read: read .eep from the eeprom"
-	echo "	-w --write: write .eep to the eeprom"
+	echo "	-r --read: read .eep from the EEPROM"
+	echo "	-w --write: write .eep to the EEPROM"
 	echo "	-f=file_name --file=file_name: binary .eep file to read to/from"
 	echo "	-d= --device= i2c bus number (ex if the eeprom is on i2c-0 set -d=0)"
-	echo "	-a= --address= i2c eeprom address"
-	echo "	-t=eeprom_type --type=eeprom_type: eeprom type to use"
-	echo "		We support the following eeprom types:"
-	echo "		-24c32"
-	echo "		-24c64"
-	echo "		-24c128"
-	echo "		-24c256"
-	echo "		-24c512"
-	echo "		-24c1024"
+	echo "	-a= --address= i2c EEPROM address"
+	echo "	-t=eeprom_type --type=eeprom_type: EEPROM type to use"
+	echo "		We support the following EEPROM types:"
+	echo "			24c32"
+	echo "			24c64"
+	echo "			24c128"
+	echo "			24c256"
+	echo "			24c512"
+	echo "			24c1024"
 	echo ""
 	echo "Example:"
 	echo "./eepflash -w -f=crex0.1.eep -t=24c32 -d=1 -a=57"
@@ -111,7 +111,7 @@ if [ "$BUS" = "NOT_SET" ]; then
 		dtoverlay i2c-gpio i2c_gpio_sda=0 i2c_gpio_scl=1 bus=9
 		rc=$?
 		if [ $rc != 0 ]; then
-			echo "Loading of i2c-gpio dtoverlay failed. Do an rpi-update (and maybe apt-get update; apt-get upgrade)."
+			echo "Loading of i2c-gpio dtoverlay failed."
 			exit $rc
 		fi
 		if [ -e "/dev/i2c-9" ]; then
@@ -130,7 +130,7 @@ modprobe at24
 
 rc=$?
 if [ $rc != 0 ]; then
-	echo "Modprobe of at24 failed. Do an rpi-update."
+	echo "Modprobe of at24 failed."
 	exit $rc
 fi
 
