@@ -34,7 +34,8 @@ unsigned int data_len, custom_ct, total_size, data_cap, custom_cap;
 
 int write_binary(char* out) {
 	FILE *fp;
-	int i, offset;
+	int offset;
+	unsigned int i;
 	short crc;
 	
 	fp=fopen(out, "wb");
@@ -156,7 +157,7 @@ void parse_data(char* c) {
 				*data = (char *) realloc(*data, data_cap);
 			}
 			
-			sscanf(c, "%2x", *data+data_len++);
+			sscanf(c, "%2x", (unsigned int *)*data+data_len++);
 			
 			*(c+2) = s;
 			c+=2;
@@ -409,8 +410,6 @@ int read_text(char* in) {
 	char * c = NULL;
 	size_t len = 0;
 	ssize_t read;
-	char *comment = NULL;
-	int atomct = 2;
 	int linect = 0;
 	char * command = (char*) malloc (101);
 	int i;

@@ -16,7 +16,8 @@ int read_bin(char *in, char *outf) {
 
 	uint16_t crc;
 	FILE *fp, *out;
-	int i,j;
+	int i;
+	uint32_t j;
 	
 	fp=fopen(in, "r");
 	if (!fp) {
@@ -140,7 +141,7 @@ int read_bin(char *in, char *outf) {
 			//decode DT blob
 			
 			fprintf(out, "dt_blob");
-			data = (char *) malloc(atom.dlen-CRC_SIZE);
+			data = (unsigned char *) malloc(atom.dlen-CRC_SIZE);
 			if (!fread(data, atom.dlen-CRC_SIZE, 1, fp)) goto err;
 			
 			for (j = 0; j<atom.dlen-CRC_SIZE; j++) {
@@ -156,7 +157,7 @@ int read_bin(char *in, char *outf) {
 			//decode custom data
 			
 			fprintf(out, "custom_data");
-			data = (char *) malloc(atom.dlen-CRC_SIZE);
+			data = (unsigned char *) malloc(atom.dlen-CRC_SIZE);
 			if (!fread(data, atom.dlen-CRC_SIZE, 1, fp)) goto err;
 			
 			for (j = 0; j<atom.dlen-CRC_SIZE; j++) {
@@ -191,8 +192,8 @@ int read_bin(char *in, char *outf) {
 	fseek(fp, 0L, SEEK_END);
 	
 	if (pos!=ftell(fp)) printf("Warning: Dump finished before EOF\n");
-	if (pos!=header.eeplen) printf("Warning: Dump finished before length specified in header\n");
-	if (ftell(fp)!=header.eeplen) printf("Warning: EOF does not match length specified in header\n");
+	if (pos!=(long)header.eeplen) printf("Warning: Dump finished before length specified in header\n");
+	if (ftell(fp)!=(long)header.eeplen) printf("Warning: EOF does not match length specified in header\n");
 	
 	printf("Done.\n");
 	
@@ -210,7 +211,6 @@ err:
 
 int main(int argc, char *argv[]) {
 	int ret;
-	int i;
 	
 	if (argc<3) {
 		printf("Wrong input format.\n");
