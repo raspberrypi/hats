@@ -27,6 +27,9 @@
 #define CRC16 0x8005
 
 /* EEPROM header structure */
+// Signature is "R-Pi" in ASCII. It is required to reversed (little endian) on disk.
+#define HEADER_SIGN be32toh((((char)'R' << 24) | ((char)'-' << 16) | ((char)'P' << 8) | ((char)'i')))
+
 struct header_t {
 	uint32_t signature;
 	unsigned char ver;

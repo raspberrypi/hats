@@ -13,8 +13,6 @@
 
 #include "eeptypes.h"
 
-#define HEADER_SIGN 0x69502d52 //"R-Pi" in ASCII reversed for endianness
-
 //todo: larger initial mallocs
 
 struct header_t header;
@@ -600,7 +598,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 	
-	header.signature = HEADER_SIGN;
+	header.signature = htole32(HEADER_SIGN);
 	header.ver = FORMAT_VERSION;
 	header.res = 0;
 	header.numatoms = 2+has_dt+custom_ct;
