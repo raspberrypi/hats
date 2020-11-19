@@ -11,6 +11,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#ifndef __APPLE__
+	#include <endian.h>
+#else
+	#include <libkern/OSByteOrder.h>
+	#define htole32(x) OSSwapHostToLittleInt32(x)
+	#define be32toh(x) OSSwapBigToHostInt32(x)
+#endif
+
 #include "eeptypes.h"
 
 //todo: larger initial mallocs
