@@ -153,12 +153,12 @@ fi
 if [ "$MODE" = "write" ]
  then
 	echo "Writing..."
-	dd if=$FILE of=$SYS/$BUS-00$ADDR/eeprom status=$DD_STATUS
+	dd if="$FILE" of=$SYS/$BUS-00$ADDR/eeprom status=$DD_STATUS
 	rc=$?
 elif [ "$MODE" = "read" ]
  then
 	echo "Reading..."
-	dd if=$SYS/$BUS-00$ADDR/eeprom of=$FILE status=$DD_STATUS
+	dd if=$SYS/$BUS-00$ADDR/eeprom of="$FILE" status=$DD_STATUS
 	rc=$?
 fi
 
