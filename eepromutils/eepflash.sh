@@ -1,5 +1,7 @@
 #!/bin/sh
 
+me=$(basename "$0")
+
 MODE="NOT_SET"
 FILE="NOT_SET"
 TYPE="NOT_SET"
@@ -10,7 +12,7 @@ usage()
 {
 	echo "eepflash: Writes or reads .eep binary image to/from HAT EEPROM on a Raspberry Pi"
 	echo ""
-	echo "./eepflash.sh"
+	echo "$me"
 	echo "	-h --help: display this help message"
 	echo "	-r --read: read .eep from the EEPROM"
 	echo "	-w --write: write .eep to the EEPROM"
@@ -27,8 +29,8 @@ usage()
 	echo "			24c1024"
 	echo ""
 	echo "Example:"
-	echo "./eepflash -w -f=crex0.1.eep -t=24c32 -d=1 -a=57"
-	echo "./eepflash -r -f=dump.eep -t=24c32 -d=1 -a=57"
+	echo "$me -w -f=crex0.1.eep -t=24c32 -d=1 -a=57"
+	echo "$me -r -f=dump.eep -t=24c32 -d=1 -a=57"
 	echo ""
 }
 
