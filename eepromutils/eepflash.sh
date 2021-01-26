@@ -33,13 +33,13 @@ usage()
 }
 
 if [ "$(id -u)" != "0" ]; then
-   echo "This script must be run as root" 1>&2
-   exit 1
+	echo "This script must be run as root" 1>&2
+	exit 1
 fi
- 
+
 while [ "$1" != "" ]; do
-    PARAM=`echo $1 | awk -F= '{print $1}'`
-    VALUE=`echo $1 | awk -F= '{print $2}'`
+	PARAM=`echo $1 | awk -F= '{print $1}'`
+	VALUE=`echo $1 | awk -F= '{print $2}'`
 	case $PARAM in
 		-h | --help)
 			usage
@@ -74,10 +74,10 @@ while [ "$1" != "" ]; do
 			usage
 			exit 1
 			;;
-    esac
-    shift
+	esac
+	shift
 done
- 
+
 if [ "$MODE" = "NOT_SET" ]; then
 	echo "You need to set mode (read or write). Try -h for help."
 	exit 1
