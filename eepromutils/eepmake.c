@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <endian.h>
 
 #include "eeptypes.h"
 
