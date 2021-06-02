@@ -91,6 +91,10 @@ elif [ "$TYPE" = "NOT_SET" ]; then
 	exit 1
 fi
 
+if [ "$ADDR" = "NOT_SET" ]; then
+	ADDR=50
+fi
+
 echo "This will attempt to talk to an eeprom at i2c address 0x$ADDR on bus $BUS. Make sure there is an eeprom at this address."
 echo "This script comes with ABSOLUTELY no warranty. Continue only if you know what you are doing."
 
@@ -122,10 +126,6 @@ if [ "$BUS" = "NOT_SET" ]; then
 			echo "Expected I2C bus (i2c-9) not found."
 		fi
 	fi
-fi
-
-if [ "$ADDR" = "NOT_SET" ]; then
-	ADDR=50
 fi
 
 modprobe at24
