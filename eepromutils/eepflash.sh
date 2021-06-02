@@ -142,23 +142,27 @@ if [ ! -d "$SYS/$BUS-00$ADDR" ]; then
 	echo "$TYPE 0x$ADDR" > $SYS/new_device
 fi
 
-DD_VERSION=$(dd --version | grep coreutils | sed -e 's/\.//' | cut -d' ' -f 3)
-if [ $DD_VERSION -ge 824 ]
- then
-	DD_STATUS="progress"
- else
-	DD_STATUS="none"
+DD_VERSION=$(dd --version 2>&1 | grep coreutils | sed -e 's/\.//' | cut -d' ' -f 3)
+if [ -z "$DD_VERSION" ]; then
+	# probably busybox's dd
+	DD_STATUS=""
+else
+	if [ $DD_VERSION -ge 824 ]; then
+		DD_STATUS="status=progress"
+	else
+		DD_STATUS="status=none"
+	fi
 fi
 
 if [ "$MODE" = "write" ]
  then
 	echo "Writing..."
-	dd if="$FILE" of=$SYS/$BUS-00$ADDR/eeprom status=$DD_STATUS
+	dd if="$FILE" of=$SYS/$BUS-00$ADDR/eeprom $DD_STATUS
 	rc=$?
 elif [ "$MODE" = "read" ]
  then
 	echo "Reading..."
-	dd if=$SYS/$BUS-00$ADDR/eeprom of="$FILE" status=$DD_STATUS
+	dd if=$SYS/$BUS-00$ADDR/eeprom of="$FILE" $DD_STATUS
 	rc=$?
 fi
 
