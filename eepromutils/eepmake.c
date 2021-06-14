@@ -513,7 +513,7 @@ int read_dt(char* in) {
 err:
 	printf("Unexpected EOF or error occurred\n");
 	fclose(fp);
-	return 0;
+	return -1;
 	
 }
 
@@ -552,7 +552,7 @@ int read_custom(char* in) {
 err:
 	printf("Unexpected EOF or error occurred\n");
 	fclose(fp);
-	return 0;
+	return -1;
 	
 }
 int main(int argc, char *argv[]) {
@@ -562,14 +562,14 @@ int main(int argc, char *argv[]) {
 	if (argc<3) {
 		printf("Wrong input format.\n");
 		printf("Try 'eepmake input_file output_file [dt_file] [-c custom_file_1 ... custom_file_n]'\n");
-		return 0;
+		return 1;
 	}
 	
 	
 	ret = read_text(argv[1]);
 	if (ret) {
 		printf("Error reading and parsing input, aborting\n");
-		return 0;
+		return 1;
 	}
 	
 	if (argc>3) {
@@ -581,7 +581,7 @@ int main(int argc, char *argv[]) {
 			ret = read_dt(argv[3]);
 			if (ret) {
 				printf("Error reading DT file, aborting\n");
-				return 0;
+				return 1;
 			}
 		}
 	}
@@ -594,7 +594,7 @@ int main(int argc, char *argv[]) {
 			ret = read_custom(argv[i]);
 			if (ret) {
 				printf("Error reading DT file, aborting\n");
-				return 0;
+				return 1;
 			}
 		}
 	
@@ -609,7 +609,7 @@ int main(int argc, char *argv[]) {
 	ret = write_binary(argv[2]);
 	if (ret) {
 		printf("Error writing output\n");
-		return 0;
+		return 1;
 	}
 	
 	printf("Done.\n");
