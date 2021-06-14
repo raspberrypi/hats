@@ -128,7 +128,7 @@ int write_binary(char* out) {
 }
 
 
-void parse_data(char* c) {
+int parse_data(char* c) {
 	int k;
 	char s;
 	char* i = c;
@@ -144,6 +144,7 @@ void parse_data(char* c) {
 	int len = strlen(c);
 	if (len % 2 != 0) {
 		printf("Error: data must have an even number of hex digits\n");
+		return -1;
 	} else {
 		for (k = 0; k<len/2; k++) {
 			//read a byte at a time
@@ -161,6 +162,8 @@ void parse_data(char* c) {
 			c+=2;
 		}
 	}
+
+	return 0;
 }
 
 
@@ -187,7 +190,7 @@ void finish_data() {
 }
 
 
-void parse_command(char* cmd, char* c) {
+int parse_command(char* cmd, char* c) {
 	int val;
 	uint32_t high1, high2;
 	char *fn, *pull;
@@ -211,7 +214,10 @@ void parse_command(char* cmd, char* c) {
 			int random_file = open("/dev/urandom", O_RDONLY);
 			ssize_t result = read(random_file, &vinf->serial_1, 16);
 			close(random_file);
-			if (result <= 0) printf("Unable to read from /dev/urandom to set up UUID");
+			if (result <= 0) {
+				printf("Unable to read from /dev/urandom to set up UUID");
+				return -1;
+			}
 			else {
 				//put in the version
 				vinf->serial_3 = (vinf->serial_3 & 0xffff0fff) | 0x00004000;
@@ -360,7 +366,9 @@ void parse_command(char* cmd, char* c) {
 		data = &dt_atom.data;
 		*data = (char *) malloc(data_cap);
 		
-		parse_data(c);
+		if (parse_data(c)) {
+			return -1;
+		}
 		continue_data = true;
 	
 	} 
@@ -384,7 +392,9 @@ void parse_command(char* cmd, char* c) {
 		data = &custom_atom[custom_ct].data;
 		*data = (char *) malloc(data_cap);
 		
-		parse_data(c);
+		if (parse_data(c)) {
+			return -1;
+		}
 		continue_data = true;
 	
 	} else if (strcmp(cmd, "end") ==0) {
@@ -393,13 +403,16 @@ void parse_command(char* cmd, char* c) {
 	}
 	/* Incoming data */
 	else if (data_receive) {
-		parse_data(c);
+		if (parse_data(c)) {
+			return -1;
+		}
 		continue_data = true;
 	} 
 	
 	
 	if (!continue_data) finish_data();
-	
+
+	return 0;
 }
 
 int read_text(char* in) {
@@ -459,7 +472,9 @@ int read_text(char* in) {
 			if ((*(c+strlen(c)-1))!='\n') printf("\n");
 #endif
 			
-			parse_command(command, c);
+			if (parse_command(command, c)) {
+				return -1;
+			}
 		
 		
 		} else printf("Can't parse line %u: %s", linect, c);
