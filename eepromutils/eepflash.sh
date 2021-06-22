@@ -35,11 +35,6 @@ usage()
 	echo ""
 }
 
-if [ "$(id -u)" != "0" ]; then
-	echo "This script must be run as root" 1>&2
-	exit 1
-fi
-
 while [ "$1" != "" ]; do
 	PARAM=`echo $1 | awk -F= '{print $1}'`
 	VALUE=`echo $1 | awk -F= '{print $2}'`
@@ -102,6 +97,11 @@ fi
 
 echo "This will attempt to talk to an eeprom at i2c address 0x$ADDR on bus $BUS. Make sure there is an eeprom at this address."
 echo "This script comes with ABSOLUTELY no warranty. Continue only if you know what you are doing."
+
+if [ "$(id -u)" != "0" ]; then
+	echo "This script must be run as root" 1>&2
+	exit 1
+fi
 
 while true; do
 	read -p "Do you wish to continue? (yes/no): " yn
