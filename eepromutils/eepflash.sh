@@ -17,6 +17,7 @@ usage()
 	echo "	-r --read: read .eep from the EEPROM"
 	echo "	-w --write: write .eep to the EEPROM"
 	echo "	-f=file_name --file=file_name: binary .eep file to read to/from"
+	echo "	    N.B. -f file_name and --file file_name (without =) also accepted"
 	echo "	-d= --device= i2c bus number (ex if the eeprom is on i2c-0 set -d=0)"
 	echo "	-a= --address= i2c EEPROM address"
 	echo "	-t=eeprom_type --type=eeprom_type: EEPROM type to use"
@@ -30,7 +31,7 @@ usage()
 	echo ""
 	echo "Example:"
 	echo "$me -w -f=crex0.1.eep -t=24c32 -d=1 -a=57"
-	echo "$me -r -f=dump.eep -t=24c32 -d=1 -a=57"
+	echo "$me -r -f dump.eep -t=24c32 -d=1 -a=57"
 	echo ""
 }
 
@@ -70,6 +71,10 @@ while [ "$1" != "" ]; do
 			;;
 		-f | --file)
 			FILE=$VALUE
+			if [ "$1" = "-f" -o "$1" = "--file" ]; then
+				shift
+				FILE=$1
+			fi
 			;;
 		*)
 			echo "ERROR: unknown parameter \"$PARAM\""
