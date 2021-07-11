@@ -156,7 +156,7 @@ int parse_data(char* c) {
 				*data = (char *) realloc(*data, data_cap);
 			}
 			
-			sscanf(c, "%2x", (unsigned int *)*data+data_len++);
+			sscanf(c, "%2hhX", (unsigned char *)*data+data_len++);
 			
 			*(c+2) = s;
 			c+=2;
