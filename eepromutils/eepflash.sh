@@ -7,6 +7,7 @@ FILE="NOT_SET"
 TYPE="NOT_SET"
 BUS="NOT_SET"
 ADDR="NOT_SET"
+BATCH="NOT_SET"
 
 usage()
 {
@@ -16,6 +17,10 @@ usage()
 	echo "	-h --help: display this help message"
 	echo "	-r --read: read .eep from the EEPROM"
 	echo "	-w --write: write .eep to the EEPROM"
+	echo "	-y --yes: disable interactive mode. By default eepflash.sh will wait"
+	echo "	    for confirmation from the user. When this flag is used, it will"
+	echo "	    perform the operation directly. This is mainly meant to be used"
+	echo "	    in scripts"
 	echo "	-f=file_name --file=file_name: binary .eep file to read to/from"
 	echo "	    N.B. -f file_name and --file file_name (without =) also accepted"
 	echo "	-d= --device= i2c bus number (ex if the eeprom is on i2c-0 set -d=0)"
@@ -48,6 +53,9 @@ while [ "$1" != "" ]; do
 			;;
 		-w | --write)
 			MODE="write"
+			;;
+		-y | --yes)
+			BATCH="yes"
 			;;
 		-t | --type)
 			if [ "$VALUE" = "24c32" ] || [ "$VALUE" = "24c64" ] || [ "$VALUE" = "24c128" ] ||
@@ -103,14 +111,16 @@ if [ "$(id -u)" != "0" ]; then
 	exit 1
 fi
 
-while true; do
-	read -p "Do you wish to continue? (yes/no): " yn
-	case $yn in
-		yes | Yes ) break;;
-		no | No ) exit;;
-		* ) echo "Please type yes or no.";;
-	esac
-done
+if [ "$BATCH" = "NOT_SET" ]; then
+	while true; do
+		read -p "Do you wish to continue? (yes/no): " yn
+		case $yn in
+			yes | Yes ) break;;
+			no | No ) exit;;
+			* ) echo "Please type yes or no.";;
+		esac
+	done
+fi
 
 modprobe i2c_dev
 if [ "$BUS" = "NOT_SET" ]; then
