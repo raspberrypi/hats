@@ -126,7 +126,11 @@ int read_bin(char *in, char *outf) {
 			}
 			
 			fprintf(out, "# Vendor info\n");
-			fprintf(out, "product_uuid %08x-%04x-%04x-%04x-%04x%08x\n", vinf.serial_4, vinf.serial_3>>16, vinf.serial_3 & 0xffff, vinf.serial_2>>16, vinf.serial_2 & 0xffff, vinf.serial_1);
+			fprintf(out, "product_uuid %08x-%04x-%04x-%04x-%04x%08x\n",
+				vinf.serial[3],
+				vinf.serial[2]>>16, vinf.serial[2] & 0xffff,
+				vinf.serial[1]>>16, vinf.serial[1] & 0xffff,
+				vinf.serial[0]);
 			fprintf(out, "product_id 0x%04x\n", vinf.pid);
 			fprintf(out, "product_ver 0x%04x\n", vinf.pver);
 			

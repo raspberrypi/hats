@@ -203,16 +203,20 @@ int parse_command(char* cmd, char* c) {
 		product_serial_set = true; //required field
 		high1 = 0; high2 = 0;
 		
-		sscanf(c, "%100s %08x-%04x-%04x-%04x-%04x%08x\n", cmd, &vinf->serial_4, 
-			&high1, &vinf->serial_3, &high2, &vinf->serial_2, &vinf->serial_1);
+		sscanf(c, "%100s %08x-%04x-%04x-%04x-%04x%08x\n", cmd,
+		       &vinf->serial[3],
+		       &high1, &vinf->serial[2],
+		       &high2, &vinf->serial[1],
+		       &vinf->serial[0]);
 		
-		vinf->serial_3 |= high1<<16;
-		vinf->serial_2 |= high2<<16;
+		vinf->serial[2] |= high1<<16;
+		vinf->serial[1] |= high2<<16;
 		
-		if ((vinf->serial_4==0) && (vinf->serial_3==0) && (vinf->serial_2==0) && (vinf->serial_1==0)) {
+		if ((vinf->serial[3]==0) && (vinf->serial[2]==0) &&
+		    (vinf->serial[1]==0) && (vinf->serial[0]==0)) {
 			//read 128 random bits from /dev/urandom
 			int random_file = open("/dev/urandom", O_RDONLY);
-			ssize_t result = read(random_file, &vinf->serial_1, 16);
+			ssize_t result = read(random_file, vinf->serial, 16);
 			close(random_file);
 			if (result <= 0) {
 				printf("Unable to read from /dev/urandom to set up UUID");
@@ -220,12 +224,16 @@ int parse_command(char* cmd, char* c) {
 			}
 			else {
 				//put in the version
-				vinf->serial_3 = (vinf->serial_3 & 0xffff0fff) | 0x00004000;
+				vinf->serial[2] = (vinf->serial[2] & 0xffff0fff) | 0x00004000;
 				
 				//put in the variant
-				vinf->serial_2 = (vinf->serial_2 & 0x3fffffff) | 0x80000000;
+				vinf->serial[1] = (vinf->serial[1] & 0x3fffffff) | 0x80000000;
 				
-				printf("UUID=%08x-%04x-%04x-%04x-%04x%08x\n", vinf->serial_4, vinf->serial_3>>16, vinf->serial_3 & 0xffff, vinf->serial_2>>16, vinf->serial_2 & 0xffff, vinf->serial_1);
+				printf("UUID=%08x-%04x-%04x-%04x-%04x%08x\n",
+				       vinf->serial[3],
+				       vinf->serial[2]>>16, vinf->serial[2] & 0xffff,
+				       vinf->serial[1]>>16, vinf->serial[1] & 0xffff,
+				       vinf->serial[0]);
 			}
  
 		}
