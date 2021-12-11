@@ -24,5 +24,6 @@ uninstall:
 	rm -f $(DESTDIR)$(prefix)/bin/eepmake
 	rm -f $(DESTDIR)$(prefix)/bin/eepdump
 	rm -f $(DESTDIR)$(exec_prefix)/sbin/eepflash.sh
+
 clean:
 	rm -f eepmake eepdump

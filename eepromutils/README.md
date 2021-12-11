@@ -34,16 +34,15 @@ https://www.raspberrypi.org/forums/viewtopic.php?t=108134
 	```bash
 	   i2cdetect -y 9 0x50 0x50
 	       0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
-	   00: 
+	   00:
 	   10:
 	   20:
 	   30:
 	   40:
 	   50: 50
-	   60: 
+	   60:
 	   70:
 	```
 	Normally, you can skip this step, and assume things are working.
 3. Flash eep file `sudo ./eepflash.sh -w -t=24c32 -f=eeprom.eep`
 4. Enable EEPROM write protection, by undoing step 1 (putting back jumper, or resetting GPIO)
-
