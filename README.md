@@ -16,7 +16,7 @@ While we cannot force anyone to follow our minimum requirements or HAT specifica
 
 So why are we bothering with all this? Basically we want to ensure consistency and compatibility with future add-on boards, and to allow a much better end-user experience, especially for the less technically aware users.
 
-Finally if you have any questions please head over to the [forums](http://www.raspberrypi.org/forums/viewforum.php?f=100) to ask them.
+Finally if you have any questions please head over to the [forums](https://forums.raspberrypi.com/viewforum.php?f=45) to ask them.
 
 ## New HATs / add-on boards basic requirements
 
