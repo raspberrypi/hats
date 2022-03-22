@@ -32,7 +32,7 @@ product "Special Sensor Board"
 
 # Custom binary data
 custom_data
-c0ffee
+deadbeef c00 1c0d e
 end
 
 ########################################################################
