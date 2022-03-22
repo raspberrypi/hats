@@ -130,7 +130,6 @@ int write_binary(char* out) {
 
 int parse_data(char* c) {
 	int k;
-	char s;
 	char* i = c;
 	char* j = c;
 	while(*j != '\0')
@@ -147,18 +146,15 @@ int parse_data(char* c) {
 		return -1;
 	} else {
 		for (k = 0; k<len/2; k++) {
-			//read a byte at a time
-			s = *(c+2);
-			*(c+2)='\0';
-			
+			int byte;
+
 			if (data_len==data_cap) {
 				data_cap *=2;
 				*data = (char *) realloc(*data, data_cap);
 			}
 			
-			sscanf(c, "%2x", (unsigned int *)*data+data_len++);
-			
-			*(c+2) = s;
+			sscanf(c, "%2x", &byte);
+			(*data)[data_len++] = byte;
 			c+=2;
 		}
 	}
