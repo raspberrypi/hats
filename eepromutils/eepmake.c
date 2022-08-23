@@ -609,6 +609,11 @@ int main(int argc, char *argv[]) {
 
 	if (custom_o)
 		for (i = custom_o; i<argc; i++) {
+			if (custom_cap == custom_ct) {
+				custom_cap *= 2;
+				custom_atom = (struct atom_t *)realloc(
+					custom_atom, custom_cap * sizeof(struct atom_t));
+			}
 			//new custom data file
 			ret = read_custom(argv[i]);
 			if (ret) {
