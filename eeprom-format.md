@@ -9,10 +9,11 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
 ```
   HEADER  <- EEPROM header (Required)
   ATOM1   <- Vendor info atom (Required)
-  ATOM2   <- GPIO map atom (Required)
+  ATOM2   <- GPIO (bank 0) map atom (Required)
   ATOM3   <- DT blob atom (Required for compliance with the HAT specification)
   ...
-  ATOMn
+  ATOMn-1
+  ATOMn   <- GPIO (bank 1) map atom (Optional, only available on CM1, CM3, CM3+ and CM4S)
 ```
 
 ## EEPROM Header Structure
@@ -41,10 +42,11 @@ Note that there are [software tools](./eepromutils) for creation of EEPROM image
 ```
   0x0000 = invalid
   0x0001 = vendor info
-  0x0002 = GPIO map
+  0x0002 = GPIO (bank 0) map
   0x0003 = Linux device tree blob
   0x0004 = manufacturer custom data
-  0x0005-0xfffe = reserved for future use
+  0x0005 = GPIO (bank 1) map
+  0x0006-0xfffe = reserved for future use
   0xffff = invalid
 ```
 
@@ -67,7 +69,7 @@ manufacturers as a per-board 'serial number'.
   Y       pstr        ASCII product string e.g. "Special Sensor Board"
 ```
 
-### GPIO map atom data (type=0x0002):
+### GPIO (bank 0) map atom data (type=0x0002):
 
   GPIO map for bank 0 GPIO on 40W B+ header.
 
@@ -100,3 +102,24 @@ manufacturers as a per-board 'serial number'.
 Binary data (the name or contents of a `.dtbo` overlay, for board hardware).
 
 For more information on the Device Tree atom contents, see the [Device Tree Guide](devicetree-guide.md).
+
+### GPIO (bank 1) map atom data (type=0x0005):
+
+  GPIO map for bank 1 GPIOs (28-45) only available on CM1, CM3, CM3+ and CM4S. This must be the last atom.
+
+```
+  Bytes   Field
+  1       bank_drive  bank drive strength/slew/hysteresis, BCM2835 can only set per bank, not per IO
+            Bits in byte:
+            [3:0] drive       0=leave at default, 1-8=drive*2mA, 9-15=reserved
+            [5:4] slew        0=leave at default, 1=slew rate limiting, 2=no slew limiting, 3=reserved
+            [7:6] hysteresis  0=leave at default, 1=hysteresis disabled, 2=hysteresis enabled, 3=reserved
+  1       reserved
+            [7:0] reserved    set to 0
+  18      1 byte per IO pin
+            Bits in each byte:
+            [2:0] func_sel    GPIO function as per FSEL GPIO register field in BCM2835 datasheet
+            [4:3] reserved    set to 0
+            [6:5] pulltype    0=leave at default setting,  1=pullup, 2=pulldown, 3=no pull
+            [  7] is_used     1=board uses this pin, 0=not connected and therefore not used
+```
