@@ -6,6 +6,7 @@
 #define ATOM_GPIO_TYPE      0x0002
 #define ATOM_DT_TYPE        0x0003
 #define ATOM_CUSTOM_TYPE    0x0004
+#define ATOM_GPIO_BANK1_TYPE 0x0005
 #define ATOM_HINVALID_TYPE  0xffff
 
 #define ATOM_VENDOR_NUM     0x0000
@@ -17,10 +18,13 @@
 #define ATOM_SIZE   10
 #define VENDOR_SIZE 22
 #define GPIO_SIZE   30
+#define GPIO_BANK1_SIZE 20
 #define CRC_SIZE     2
 
 #define GPIO_MIN     2
-#define GPIO_COUNT  28
+#define GPIO_COUNT        28
+#define GPIO_COUNT_BANK1  18
+#define GPIO_COUNT_TOTAL  (GPIO_COUNT + GPIO_COUNT_BANK1)
 
 #define FORMAT_VERSION 0x01
 
