@@ -88,6 +88,9 @@ int read_bin(char *in, char *outf) {
 			case ATOM_CUSTOM_TYPE:
 				printf("manufacturer custom data");
 				break;
+			case ATOM_GPIO_BANK1_TYPE:
+				printf("GPIO map bank 1");
+				break;
 			default:
 				printf("unknown");
 				break;
@@ -148,18 +151,36 @@ int read_bin(char *in, char *outf) {
 			
 			if (!fread(&crc, CRC_SIZE, 1, fp)) goto err;
 			
-		} else if (atom.type==ATOM_GPIO_TYPE) {
+		} else if ((atom.type == ATOM_GPIO_TYPE) || (atom.type == ATOM_GPIO_BANK1_TYPE)) {
+			bool bank1 = (atom.type == ATOM_GPIO_BANK1_TYPE);
+			unsigned int gpio_count = bank1 ? GPIO_COUNT_BANK1 : GPIO_COUNT;
+			unsigned int read_size = bank1 ? GPIO_BANK1_SIZE : GPIO_SIZE;
+
 			//decode GPIO map
-			if (!fread(&gpiomap, GPIO_SIZE, 1, fp)) goto err;
+			if (!fread(&gpiomap, read_size, 1, fp)) goto err;
 			
-			fprintf(out, "# GPIO map info\n");
+			fprintf(out, "# GPIO ");
+			if (bank1)
+				fprintf(out, "bank 1 ");
+			fprintf(out, "map info\n");
+
+			if (bank1)
+				fprintf(out, "bank1_");
 			fprintf(out, "gpio_drive %d\n", gpiomap.flags & 15); //1111
+
+			if (bank1)
+				fprintf(out, "bank1_");
 			fprintf(out, "gpio_slew %d\n", (gpiomap.flags & 48)>>4); //110000
+
+			if (bank1)
+				fprintf(out, "bank1_");
 			fprintf(out, "gpio_hysteresis %d\n", (gpiomap.flags & 192)>>6); //11000000
-			fprintf(out, "back_power %d\n", gpiomap.power);
+
+			if (!bank1)
+				fprintf(out, "back_power %d\n", gpiomap.power);
 			fprintf(out, "#        GPIO  FUNCTION  PULL\n#        ----  --------  ----\n");
 
-			for (j = 0; j<28; j++) {
+			for (j = 0; j < gpio_count; j++) {
 				if (gpiomap.pins[j] & (1<<7)) {
 					//board uses this pin
 					
@@ -195,7 +216,8 @@ int read_bin(char *in, char *outf) {
 								break;
 					}
 					
-					fprintf(out, "setgpio  %d      %s     %s\n", j, func_str, pull_str);
+					fprintf(out, "setgpio  %d      %s     %s\n",
+						bank1 ? j + GPIO_COUNT : j, func_str, pull_str);
 				}
 			}
 			
