@@ -136,6 +136,7 @@ if [ "$BUS" = "NOT_SET" ]; then
 			echo "Loading of i2c-gpio dtoverlay failed."
 			exit $rc
 		fi
+		sleep 1
 		if [ -e "/dev/i2c-9" ]; then
 			BUS=9
 		else
