@@ -41,8 +41,8 @@ usage()
 }
 
 while [ "$1" != "" ]; do
-	PARAM=`echo $1 | awk -F= '{print $1}'`
-	VALUE=`echo $1 | awk -F= '{print $2}'`
+	PARAM=$(echo "$1" | awk -F= '{print $1}')
+	VALUE=$(echo "$1" | awk -F= '{print $2}')
 	case $PARAM in
 		-h | --help)
 			usage
@@ -74,7 +74,7 @@ while [ "$1" != "" ]; do
 			;;
 		-f | --file)
 			FILE=$VALUE
-			if [ "$1" = "-f" -o "$1" = "--file" ]; then
+			if [ "$1" = "-f" ] || [ "$1" = "--file" ]; then
 				shift
 				FILE=$1
 			fi
@@ -113,7 +113,8 @@ fi
 
 if [ "$BATCH" = "NOT_SET" ]; then
 	while true; do
-		read -p "Do you wish to continue? (yes/no): " yn
+		printf "Do you wish to continue? (yes/no): "
+		read -r yn
 		case $yn in
 			yes | Yes ) break;;
 			no | No ) exit;;
@@ -162,7 +163,7 @@ if [ -z "$DD_VERSION" ]; then
 	# probably busybox's dd
 	DD_STATUS=""
 else
-	if [ $DD_VERSION -ge 824 ]; then
+	if [ "$DD_VERSION" -ge 824 ]; then
 		DD_STATUS="status=progress"
 	else
 		DD_STATUS="status=none"
