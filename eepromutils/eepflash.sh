@@ -103,7 +103,7 @@ if [ "$ADDR" = "NOT_SET" ]; then
 	ADDR=50
 fi
 
-echo "This will attempt to talk to an eeprom at i2c address 0x$ADDR on bus $BUS. Make sure there is an eeprom at this address."
+echo "This will attempt to talk to an eeprom at i2c address 0x$ADDR. Make sure there is an eeprom at this address."
 echo "This script comes with ABSOLUTELY no warranty. Continue only if you know what you are doing."
 
 if [ "$(id -u)" != "0" ]; then
