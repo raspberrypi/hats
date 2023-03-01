@@ -24,7 +24,7 @@ If you are designing a new add-on board that takes advantage of the pins on the 
 
 1. The ID_SC and ID_SD pins must only be used for attaching a compatible ID EEPROM. **Do not use ID_SC and ID_SD pins for anything except connecting an ID EEPROM, if unused these pins must be left unconnected**
 2. If back-powering via the 5V GPIO header pins you must make sure that it is safe to do so even if the Pi 5V supply is also connected. Adding an ideal 'safety' diode as per the relevant section of the [design guide](designguide.md) is the recommended way to do this.
-3. The board must protect against old firmware accidentally driving GPIO6,14,16 at boot time if any of those pins are also driven by the board itself.
+3. The board must protect against old firmware accidentally driving GPIO 6, 14 or 16 at boot time if any of those pins are also driven by the board itself.
 
 Note that for new designs that only use the original 26 way GPIO header pins it is still recommended to follow requirement 2. if the board supports back-powering a Pi.
 
