@@ -1,5 +1,7 @@
 # ADD-ON BOARDS AND HATs
 
+**N.B.** THIS REPO HAS NOT YET BEEN UPDATED WITH THE HAT+ SPECIFICATION
+
 **NOTE** All references to GPIO numbers within this document are referring to the BCM283x GPIOs (**NOT** pin numbers on the Pi GPIO header).
 
 ## Introduction
