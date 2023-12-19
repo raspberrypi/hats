@@ -1,5 +1,7 @@
 # Utilities to create, flash and dump HAT EEPROM images.
 
+## N.B. Like the rest of this repo, these tools have been deprecated. The new HAT+ EEPROM utilities can be found in our [utils repo](https://github.com/raspberrypi/utils/tree/master/eeptools). ##
+
 There is a complete, worked example at:
 https://www.raspberrypi.org/forums/viewtopic.php?t=108134
 
